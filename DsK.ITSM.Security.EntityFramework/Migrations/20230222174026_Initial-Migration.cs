@@ -29,6 +29,35 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ITSystems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SystemName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Systems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Office365EmailGroups",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GroupName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    GroupEmail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    GroupType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Office365EmailGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Permissions",
                 columns: table => new
                 {
@@ -54,6 +83,61 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SOP1",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestId = table.Column<int>(type: "int", nullable: true),
+                    EmployeeName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Company = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Department = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TitlePosition = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Supervisor = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CopyProfileLike = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    DeskLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    EmployeeType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    InternetAccess = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    PhoneAccess = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    PhoneExtension = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    EmailGroups = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SOP1", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SOP1Systems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SOP1Id = table.Column<int>(type: "int", nullable: false),
+                    System = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SOP1Systems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Status",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StatusName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Status", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -113,6 +197,31 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         name: "FK_RolePermissions_Roles",
                         column: x => x.RoleId,
                         principalTable: "Roles",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Requests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Summary = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    System = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Priority = table.Column<string>(type: "varchar(6)", unicode: false, maxLength: 6, nullable: false),
+                    RequestDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RequestType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RequestedByUserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Requests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Requests_Users",
+                        column: x => x.RequestedByUserId,
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -232,6 +341,68 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RequestAssignedHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestId = table.Column<int>(type: "int", nullable: false),
+                    AssignedDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    AssignedToUserId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestAssignedHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RequestAssignedHistory_Requests",
+                        column: x => x.RequestId,
+                        principalTable: "Requests",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RequestMessageHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestId = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    MessageDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestMessageHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RequestMessageHistory_Requests",
+                        column: x => x.RequestId,
+                        principalTable: "Requests",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RequestStatusHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestId = table.Column<int>(type: "int", nullable: false),
+                    TransactionDateTime = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ChangedByUsernameUserId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionDateTime", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RequestStatusHistory_Requests",
+                        column: x => x.RequestId,
+                        principalTable: "Requests",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AuthenticationProviders",
                 table: "AuthenticationProviders",
@@ -242,6 +413,26 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                 table: "Permissions",
                 column: "PermissionName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestAssignedHistory_RequestId",
+                table: "RequestAssignedHistory",
+                column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestMessageHistory_RequestId",
+                table: "RequestMessageHistory",
+                column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_RequestedByUserId",
+                table: "Requests",
+                column: "RequestedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestStatusHistory_RequestId",
+                table: "RequestStatusHistory",
+                column: "RequestId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles",
@@ -313,7 +504,31 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ITSystems");
+
+            migrationBuilder.DropTable(
+                name: "Office365EmailGroups");
+
+            migrationBuilder.DropTable(
+                name: "RequestAssignedHistory");
+
+            migrationBuilder.DropTable(
+                name: "RequestMessageHistory");
+
+            migrationBuilder.DropTable(
+                name: "RequestStatusHistory");
+
+            migrationBuilder.DropTable(
                 name: "RolePermissions");
+
+            migrationBuilder.DropTable(
+                name: "SOP1");
+
+            migrationBuilder.DropTable(
+                name: "SOP1Systems");
+
+            migrationBuilder.DropTable(
+                name: "Status");
 
             migrationBuilder.DropTable(
                 name: "UserAuthenticationProviders");
@@ -332,6 +547,9 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Requests");
 
             migrationBuilder.DropTable(
                 name: "AuthenticationProviders");

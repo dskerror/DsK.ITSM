@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DsK.ITSM.Security.EntityFramework.Migrations
 {
-    [DbContext(typeof(SecurityTablesTestContext))]
-    partial class SecurityTablesTestContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(DsKitsmContext))]
+    partial class DsKitsmContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -58,6 +58,53 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.ToTable("AuthenticationProviders");
                 });
 
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Itsystem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("SystemName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_Systems");
+
+                    b.ToTable("ITSystems", (string)null);
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Office365EmailGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("GroupEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("GroupName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("GroupType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Office365EmailGroups");
+                });
+
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -82,6 +129,140 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         .IsUnique();
 
                     b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Request", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(6)");
+
+                    b.Property<DateTime>("RequestDateTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("RequestType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("RequestedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("System")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestedByUserId");
+
+                    b.ToTable("Requests");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestAssignedHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AssignedDateTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<int?>("AssignedToUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.ToTable("RequestAssignedHistory", (string)null);
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestMessageHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("MessageDateTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.ToTable("RequestMessageHistory", (string)null);
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestStatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ChangedByUsernameUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("TransactionDateTime")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id")
+                        .HasName("PK_TransactionDateTime");
+
+                    b.HasIndex("RequestId");
+
+                    b.ToTable("RequestStatusHistory", (string)null);
                 });
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Role", b =>
@@ -122,6 +303,130 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         .HasName("PK_RolePermissions_1");
 
                     b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Sop1", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Company")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CopyProfileLike")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("DeskLocation")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("EmailGroups")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EmployeeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("EmployeeType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("InternetAccess")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PhoneAccess")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PhoneExtension")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int?>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Supervisor")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TitlePosition")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Username")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SOP1", (string)null);
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Sop1system", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Sop1id")
+                        .HasColumnType("int")
+                        .HasColumnName("SOP1Id");
+
+                    b.Property<string>("System")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SOP1Systems", (string)null);
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Status", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Status", (string)null);
                 });
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.User", b =>
@@ -348,6 +653,50 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.ToTable("UserTokens");
                 });
 
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Request", b =>
+                {
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.User", "RequestedByUser")
+                        .WithMany("Requests")
+                        .HasForeignKey("RequestedByUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Requests_Users");
+
+                    b.Navigation("RequestedByUser");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestAssignedHistory", b =>
+                {
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Request", "Request")
+                        .WithMany("RequestAssignedHistories")
+                        .HasForeignKey("RequestId")
+                        .IsRequired()
+                        .HasConstraintName("FK_RequestAssignedHistory_Requests");
+
+                    b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestMessageHistory", b =>
+                {
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Request", "Request")
+                        .WithMany("RequestMessageHistories")
+                        .HasForeignKey("RequestId")
+                        .IsRequired()
+                        .HasConstraintName("FK_RequestMessageHistory_Requests");
+
+                    b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestStatusHistory", b =>
+                {
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Request", "Request")
+                        .WithMany("RequestStatusHistories")
+                        .HasForeignKey("RequestId")
+                        .IsRequired()
+                        .HasConstraintName("FK_RequestStatusHistory_Requests");
+
+                    b.Navigation("Request");
+                });
+
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RolePermission", b =>
                 {
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Permission", "Role")
@@ -458,6 +807,15 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.Navigation("UserPermissions");
                 });
 
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Request", b =>
+                {
+                    b.Navigation("RequestAssignedHistories");
+
+                    b.Navigation("RequestMessageHistories");
+
+                    b.Navigation("RequestStatusHistories");
+                });
+
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Role", b =>
                 {
                     b.Navigation("RolePermissions");
@@ -467,6 +825,8 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.User", b =>
                 {
+                    b.Navigation("Requests");
+
                     b.Navigation("UserAuthenticationProviders");
 
                     b.Navigation("UserPasswords");

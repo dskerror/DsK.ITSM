@@ -7,10 +7,10 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var options = new DbContextOptions<SecurityTablesTestContext>();
+        var options = new DbContextOptions<DsKitsmContext>();
         
-        //var db = new SecurityTablesTestContext(new DbContextOptionsBuilder<SecurityTablesTestContext>().UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=SecurityTablesTest;Trusted_Connection=True;Trust Server Certificate=true").Options);
-        var db = new SecurityTablesTestContext(new DbContextOptionsBuilder<SecurityTablesTestContext>().UseSqlServer("Server=.;Database=DsKITSM;Trusted_Connection=True;Trust Server Certificate=true").Options);
+        //var db = new DsKitsmContext(new DbContextOptionsBuilder<DsKitsmContext>().UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=SecurityTablesTest;Trusted_Connection=True;Trust Server Certificate=true").Options);
+        var db = new DsKitsmContext(new DbContextOptionsBuilder<DsKitsmContext>().UseSqlServer("Server=.;Database=DsKITSM;Trusted_Connection=True;Trust Server Certificate=true").Options);
         db.Database.Migrate(); //CREATES DATABASE IF IT DOESNT EXISTS
         db.Database.EnsureCreated(); //CREATES TABLES IF IT DOESNT EXISTS
 
@@ -34,7 +34,7 @@ internal class Program
         db.SaveChanges();
 
     }
-    private static void CreateAdminUserPassword(SecurityTablesTestContext db, User adminUser)
+    private static void CreateAdminUserPassword(DsKitsmContext db, User adminUser)
     {
         var ramdomSalt = SecurityHelpers.RandomizeSalt;
 
@@ -48,7 +48,7 @@ internal class Program
         db.UserPasswords.Add(userPassword);
         db.SaveChanges();
     }
-    private static AuthenticationProvider CreateLocalAuthProvider(SecurityTablesTestContext db)
+    private static AuthenticationProvider CreateLocalAuthProvider(DsKitsmContext db)
     {
         var authProvider = new AuthenticationProvider()
         {
@@ -62,13 +62,13 @@ internal class Program
         db.SaveChanges();
         return authProvider;
     }
-    private static void AddAdminRoleToAdminUser(SecurityTablesTestContext db, Role adminRole, User adminUser)
+    private static void AddAdminRoleToAdminUser(DsKitsmContext db, Role adminRole, User adminUser)
     {
         var adminUserRole = new UserRole() { Role = adminRole, User = adminUser };
         db.UserRoles.Add(adminUserRole);
         db.SaveChanges();
     }    
-    private static void AddAuthenticationProviderToAdminUser(SecurityTablesTestContext db, AuthenticationProvider localAuthProvider, User adminUser)
+    private static void AddAuthenticationProviderToAdminUser(DsKitsmContext db, AuthenticationProvider localAuthProvider, User adminUser)
     {
         var adminAuthenticationProvider = new UserAuthenticationProvider() { 
             AuthenticationProvider = localAuthProvider, 
@@ -78,7 +78,7 @@ internal class Program
         db.UserAuthenticationProviders.Add(adminAuthenticationProvider);
         db.SaveChanges();
     }
-    private static User CreateAdminUser(SecurityTablesTestContext db)
+    private static User CreateAdminUser(DsKitsmContext db)
     {
         var adminUser = new User()
         {
@@ -92,7 +92,7 @@ internal class Program
         db.SaveChanges();
         return adminUser;
     }
-    private static void AddAdminPermissionToAdminRole(SecurityTablesTestContext db, Permission adminPermission, Role adminRole)
+    private static void AddAdminPermissionToAdminRole(DsKitsmContext db, Permission adminPermission, Role adminRole)
     {
         var adminRolePermission = new RolePermission()
         {
@@ -102,7 +102,7 @@ internal class Program
         db.RolePermissions.Add(adminRolePermission);
         db.SaveChanges();
     }
-    private static Role CreateAdminRole(SecurityTablesTestContext db)
+    private static Role CreateAdminRole(DsKitsmContext db)
     {
         var adminRole = new Role()
         {
@@ -113,7 +113,7 @@ internal class Program
         db.SaveChanges();
         return adminRole;
     }
-    private static Role CreateUserRole(SecurityTablesTestContext db)
+    private static Role CreateUserRole(DsKitsmContext db)
     {
         var role = new Role()
         {
@@ -124,7 +124,7 @@ internal class Program
         db.SaveChanges();
         return role;
     }
-    private static Permission CreateAdminPermission(SecurityTablesTestContext db)
+    private static Permission CreateAdminPermission(DsKitsmContext db)
     {
         var adminPermission = new Permission()
         {

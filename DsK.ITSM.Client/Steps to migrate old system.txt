@@ -1,44 +1,106 @@
 ﻿backup old database
 restore with new name
-rename permissions, users and userpermissions
-rename pk and remove fk from this tables
-run seed program
-truncate table [DsKITSM].[dbo].[UserRoles]
-truncate table [DsKITSM].[dbo].[UserAuthenticationProviders]
-truncate table [DsKITSM].[dbo].[UserPasswords]
-DELETE FROM [DsKITSM].[dbo].[Users]
-DBCC CHECKIDENT ('[DsKITSM].[dbo].[Users]', RESEED, 0)
-update [DsKITSM].[dbo].[OLDUsers] set [Email] = 'claimsrep3x@optimapr.com' where id = 58
+rename table Permissions to OldPermissions
+rename table Users to OldUsers
+rename table UserPermissions to OldUserPermissions
+rename Primary Key Constraints from this 3 tables 
+remove Forreign Key Constraints from this 3 tables 
+run seed program (Verify Connection String)
+truncate table [UserRoles]
+truncate table [UserAuthenticationProviders]
+truncate table [UserPasswords]
+DELETE FROM [Users]
+DBCC CHECKIDENT ('[Users]', RESEED, 0)
+update [OLDUsers] set [Email] = 'claimsrep3x@optimapr.com' where id = 58
 
-SET IDENTITY_INSERT [DsKITSM].[dbo].[Users] ON
-INSERT INTO [DsKITSM].[dbo].[Users]
+SET IDENTITY_INSERT [Users] ON
+INSERT INTO [Users]
 (id, [Username],[Name],[Email],[EmailConfirmed],[LockoutEnd],[LockoutEnabled],[AccessFailedCount],[TwoFactorEnabled])
-SELECT id, [Username],[Name],[Email],1,null,0,0,0 FROM [DsKITSM].[dbo].[OLDUsers] order by id
-SET IDENTITY_INSERT [DsKITSM].[dbo].[Users] OFF
+SELECT id, [Username],[Name],[Email],1,null,0,0,0 FROM [OLDUsers] order by id
+SET IDENTITY_INSERT [Users] OFF
 
-INSERT INTO [DsKITSM].[dbo].[Roles] (RoleName,RoleDescription) VALUES ('Tech','Tech Role')
-INSERT INTO [DsKITSM].[dbo].[Roles] (RoleName,RoleDescription) VALUES ('RT-NewEmployee','RT-NewEmployee Role')
+INSERT INTO [Roles] (RoleName,RoleDescription) VALUES ('Tech','Tech Role')
+INSERT INTO [Roles] (RoleName,RoleDescription) VALUES ('RT-NewEmployee','RT-NewEmployee Role')
 
-SET IDENTITY_INSERT [DsKITSM].[dbo].[UserLogs] ON
-INSERT INTO [DsKITSM].[dbo].[UserLogs]
+SET IDENTITY_INSERT [UserLogs] ON
+INSERT INTO [UserLogs]
 ([Id],[UserId],[IP],[Method],[Path],[QueryString],[LogDateTime])
 SELECT a.[Id], b.Id as UserId, [IPV4Address], 'GET',[URL],'',DateTimeStamp
-FROM [DsKITSM].[dbo].[Log] a 
+FROM [Log] a 
 inner join OLDUsers b on a.Username = b.Username
-SET IDENTITY_INSERT [DsKITSM].[dbo].[UserLogs] OFF
+SET IDENTITY_INSERT [UserLogs] OFF
 
-DELETE TABLE LOG 
-DELETE TABLE OLDUserPermissions
-DELETE TABLE OLDPermissions
-DELETE TABLE OLDUsers
+DROP TABLE LOG 
+DROP TABLE OLDUserPermissions
+DROP TABLE OLDPermissions
+DROP TABLE OLDUsers
 
-INSERT INTO [DsKITSM].[dbo].[UserRoles] ([UserId],[RoleId]) VALUES(1,1)
-INSERT INTO [DsKITSM].[dbo].[UserRoles] ([UserId],[RoleId])
-SELECT [Id], 2 FROM [DsKITSM].[dbo].[Users] order by id
+INSERT INTO [UserRoles] ([UserId],[RoleId]) VALUES(1,1)
+INSERT INTO [UserRoles] ([UserId],[RoleId])
+SELECT [Id], 2 FROM [Users] order by id
 
-delete all Request Table FK
+delete all Request Table FK (3 FK relations)
+
+alter table [Requests] add RequestedByUserId int
+
+--SELECT a.[RequestedByUsername], b.Username, a.RequestedByUserId
+--FROM  [Requests] a
+--LEFT JOIN Users b on a.RequestedByUsername = b.Username
+
+UPDATE [Requests]
+SET RequestedByUserId = b.Id
+FROM  [Requests] a
+LEFT JOIN Users b on a.RequestedByUsername = b.Username
+
+remove RequestedByUserId Allow Nulls
+
+ALTER TABLE Requests DROP COLUMN RequestedByUsername;
+ALTER TABLE Requests DROP COLUMN RequestedByEmail;
+ALTER TABLE Requests DROP COLUMN RequestedByDisplayName;
+
+--
+alter table [RequestAssignedHistory] add [AssignedToUserId] int
+
+UPDATE [RequestAssignedHistory]
+SET [AssignedToUserId] = b.Id
+FROM  [RequestAssignedHistory] a
+LEFT JOIN Users b on a.[AssignedTo] = b.Username
+
+ALTER TABLE RequestAssignedHistory DROP COLUMN AssignedTo;
 
 
-alter table [DsKITSM].[dbo].[Requests] add RequestedByUserId int
-alter table [DsKITSM].[dbo].[Requests] add AssignedToUserId int
+--
 
+alter table [RequestMessageHistory] add UserId int
+
+UPDATE [RequestMessageHistory]
+SET UserId = b.Id
+FROM  [RequestMessageHistory] a
+LEFT JOIN Users b on a.[Username] = b.Username
+
+ALTER TABLE [RequestMessageHistory] DROP COLUMN [Username];
+ALTER TABLE [RequestMessageHistory] DROP COLUMN DisplayName;
+
+--
+
+alter table [RequestStatusHistory] add ChangedByUsernameUserId int
+
+UPDATE [RequestStatusHistory]
+SET ChangedByUsernameUserId = b.Id
+FROM  [RequestStatusHistory] a
+LEFT JOIN Users b on a.[ChangedByUsername] = b.Username
+
+ALTER TABLE [RequestStatusHistory] DROP COLUMN [ChangedByUsername];
+ALTER TABLE [RequestStatusHistory] DROP COLUMN [ChangedByDisplayName];
+
+--
+INSERT INTO [AuthenticationProviders] 
+  ([AuthenticationProviderName],[AuthenticationProviderType],[Domain],[Username],[Password])
+  VALUES ('AD','Active Directory','domainname','username','password')
+
+INSERT INTO [UserAuthenticationProviders]
+  ([UserId],[AuthenticationProviderId],[Username] )
+  SELECT [Id],2,[Username]  FROM [Users]
+--
+
+crear relaciones entre tablas request

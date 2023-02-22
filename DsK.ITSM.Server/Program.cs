@@ -16,7 +16,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();
 
 //builder.Services.AddHttpLogging(logging =>
 //{
@@ -41,7 +41,7 @@ builder.Services.AddEndpointsApiExplorer();
 //});
 
 
-builder.Services.AddDbContext<SecurityTablesTestContext>(options =>
+builder.Services.AddDbContext<DsKitsmContext>(options =>
 {
 	options.UseSqlServer("Server=.;Database=DsKITSM;Trusted_Connection=True;Trust Server Certificate=true");
 });
@@ -88,8 +88,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	//app.UseSwagger();
-	//app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 
