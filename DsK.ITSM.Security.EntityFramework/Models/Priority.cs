@@ -3,13 +3,11 @@ using System.Collections.Generic;
 
 namespace DsK.ITSM.Security.EntityFramework.Models;
 
-public partial class Itsystem
+public partial class Priority
 {
     public int Id { get; set; }
 
-    public string SystemName { get; set; } = null!;
+    public string PriorityName { get; set; } = null!;
 
     public virtual ICollection<Request> Requests { get; } = new List<Request>();
-
-    public virtual ICollection<Sop1system> Sop1systems { get; } = new List<Sop1system>();
 }

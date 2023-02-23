@@ -11,6 +11,14 @@
 
 <MudTable Elevation="25" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<RequestDto>>>(ServerReload))" Hover="true" Dense="true" Bordered="true" Striped="true" @ref="_table">
     <ToolBarContent>
+
+        @if (_AccessRequestCreate)
+        {
+            <div class="justify-center mud-text-align-center">
+                <MudButton DisableElevation Variant="Variant.Filled" OnClick="@(() => CreateRequest())" StartIcon="@Icons.Material.Filled.Create" IconColor="Color.Surface" Color="Color.Primary">Create Request</MudButton>
+            </div>
+        }
+
         <MudSpacer />
         <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
@@ -26,6 +34,11 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="ViewRequest">
+            <MudIconButton OnClick="() => ViewRequest(context.Id)"
+                           Icon="@Icons.Material.Filled.Edit"
+                           Color="Color.Primary"
+                           Variant="Variant.Filled">
+            </MudIconButton>
         </MudTd>
         <MudTd DataLabel="Id">
             <MudHighlighter Text="@context.Id.ToString()" HighlightedText="@_searchString" />
@@ -34,10 +47,10 @@
             <MudHighlighter Text="@context.Summary" HighlightedText="@_searchString" />
         </MudTd>
         <MudTd DataLabel="System">
-            <MudHighlighter Text="@context.System" HighlightedText="@_searchString" />
+            @*<MudHighlighter Text="@context.System" HighlightedText="@_searchString" />*@
         </MudTd>
         <MudTd DataLabel="Category">
-            <MudHighlighter Text="@context.Category" HighlightedText="@_searchString" />
+            @*<MudHighlighter Text="@context.Category" HighlightedText="@_searchString" />*@
         </MudTd>
         <MudTd DataLabel="RequestDateTime">
             <MudHighlighter Text="@context.RequestDateTime.ToShortDateString()" HighlightedText="@_searchString" />

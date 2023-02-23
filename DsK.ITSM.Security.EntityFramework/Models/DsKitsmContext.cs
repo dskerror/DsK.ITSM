@@ -17,11 +17,15 @@ public partial class DsKitsmContext : DbContext
 
     public virtual DbSet<AuthenticationProvider> AuthenticationProviders { get; set; }
 
+    public virtual DbSet<Category> Categories { get; set; }
+
     public virtual DbSet<Itsystem> Itsystems { get; set; }
 
     public virtual DbSet<Office365EmailGroup> Office365EmailGroups { get; set; }
 
     public virtual DbSet<Permission> Permissions { get; set; }
+
+    public virtual DbSet<Priority> Priorities { get; set; }
 
     public virtual DbSet<Request> Requests { get; set; }
 
@@ -30,6 +34,8 @@ public partial class DsKitsmContext : DbContext
     public virtual DbSet<RequestMessageHistory> RequestMessageHistories { get; set; }
 
     public virtual DbSet<RequestStatusHistory> RequestStatusHistories { get; set; }
+
+    public virtual DbSet<RequestType> RequestTypes { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
@@ -72,6 +78,13 @@ public partial class DsKitsmContext : DbContext
             entity.Property(e => e.Username).HasMaxLength(100);
         });
 
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Categori__3214EC07D45114DC");
+
+            entity.Property(e => e.CategoryName).HasMaxLength(20);
+        });
+
         modelBuilder.Entity<Itsystem>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Systems");
@@ -97,17 +110,40 @@ public partial class DsKitsmContext : DbContext
             entity.Property(e => e.PermissionName).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<Priority>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Priority__3214EC073C9C5F2E");
+
+            entity.Property(e => e.PriorityName)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Request>(entity =>
         {
-            entity.Property(e => e.Category).HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(500);
-            entity.Property(e => e.Priority)
-                .HasMaxLength(6)
-                .IsUnicode(false);
+            entity.Property(e => e.ItsystemId).HasColumnName("ITSystemId");
             entity.Property(e => e.RequestDateTime).HasColumnType("datetime");
-            entity.Property(e => e.RequestType).HasMaxLength(50);
             entity.Property(e => e.Summary).HasMaxLength(100);
-            entity.Property(e => e.System).HasMaxLength(255);
+
+            entity.HasOne(d => d.Category).WithMany(p => p.Requests)
+                .HasForeignKey(d => d.CategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Requests_Categories");
+
+            entity.HasOne(d => d.Itsystem).WithMany(p => p.Requests)
+                .HasForeignKey(d => d.ItsystemId)
+                .HasConstraintName("FK_Requests_ITSystems");
+
+            entity.HasOne(d => d.Priority).WithMany(p => p.Requests)
+                .HasForeignKey(d => d.PriorityId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Requests_Priority");
+
+            entity.HasOne(d => d.RequestType).WithMany(p => p.Requests)
+                .HasForeignKey(d => d.RequestTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Requests_RequestType");
 
             entity.HasOne(d => d.RequestedByUser).WithMany(p => p.Requests)
                 .HasForeignKey(d => d.RequestedByUserId)
@@ -123,12 +159,12 @@ public partial class DsKitsmContext : DbContext
 
             entity.HasOne(d => d.AssignedToUser).WithMany(p => p.RequestAssignedHistories)
                 .HasForeignKey(d => d.AssignedToUserId)
-                .HasConstraintName("FK_RequestAssignedHistory_Users");
+                .HasConstraintName("FK_RequestAssignedHistory_Requests");
 
             entity.HasOne(d => d.Request).WithMany(p => p.RequestAssignedHistories)
                 .HasForeignKey(d => d.RequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_RequestAssignedHistory_Requests");
+                .HasConstraintName("FK_RequestAssignedHistory_Requests1");
         });
 
         modelBuilder.Entity<RequestMessageHistory>(entity =>
@@ -141,11 +177,11 @@ public partial class DsKitsmContext : DbContext
             entity.HasOne(d => d.Request).WithMany(p => p.RequestMessageHistories)
                 .HasForeignKey(d => d.RequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_RequestMessageHistory_Requests");
+                .HasConstraintName("FK_RequestMessageHistory_Requests1");
 
             entity.HasOne(d => d.User).WithMany(p => p.RequestMessageHistories)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK_RequestMessageHistory_Users");
+                .HasConstraintName("FK_RequestMessageHistory_Requests");
         });
 
         modelBuilder.Entity<RequestStatusHistory>(entity =>
@@ -159,12 +195,21 @@ public partial class DsKitsmContext : DbContext
 
             entity.HasOne(d => d.ChangedByUsernameUser).WithMany(p => p.RequestStatusHistories)
                 .HasForeignKey(d => d.ChangedByUsernameUserId)
-                .HasConstraintName("FK_RequestStatusHistory_Users");
+                .HasConstraintName("FK_RequestStatusHistory_Requests");
 
             entity.HasOne(d => d.Request).WithMany(p => p.RequestStatusHistories)
                 .HasForeignKey(d => d.RequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_RequestStatusHistory_Requests");
+                .HasConstraintName("FK_RequestStatusHistory_Requests1");
+        });
+
+        modelBuilder.Entity<RequestType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__RequestT__3214EC07A8537660");
+
+            entity.ToTable("RequestType");
+
+            entity.Property(e => e.RequestTypeName).HasMaxLength(20);
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -215,8 +260,12 @@ public partial class DsKitsmContext : DbContext
         {
             entity.ToTable("SOP1Systems");
 
+            entity.Property(e => e.ItsystemId).HasColumnName("ITSystemId");
             entity.Property(e => e.Sop1id).HasColumnName("SOP1Id");
-            entity.Property(e => e.System).HasMaxLength(255);
+
+            entity.HasOne(d => d.Itsystem).WithMany(p => p.Sop1systems)
+                .HasForeignKey(d => d.ItsystemId)
+                .HasConstraintName("FK_SOP1Systems_ITSystems");
         });
 
         modelBuilder.Entity<Status>(entity =>

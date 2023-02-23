@@ -58,6 +58,25 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.ToTable("AuthenticationProviders");
                 });
 
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id")
+                        .HasName("PK__Categori__3214EC07D45114DC");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Itsystem", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +86,7 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("SystemName")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -131,6 +151,26 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.ToTable("Permissions");
                 });
 
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Priority", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PriorityName")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
+
+                    b.HasKey("Id")
+                        .HasName("PK__Priority__3214EC073C9C5F2E");
+
+                    b.ToTable("Priorities");
+                });
+
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Request", b =>
                 {
                     b.Property<int>("Id")
@@ -139,28 +179,25 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("Priority")
-                        .IsRequired()
-                        .HasMaxLength(6)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(6)");
+                    b.Property<int?>("ItsystemId")
+                        .HasColumnType("int")
+                        .HasColumnName("ITSystemId");
+
+                    b.Property<int>("PriorityId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("RequestDateTime")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("RequestType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("RequestTypeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("RequestedByUserId")
                         .HasColumnType("int");
@@ -170,12 +207,15 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("System")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ItsystemId");
+
+                    b.HasIndex("PriorityId");
+
+                    b.HasIndex("RequestTypeId");
 
                     b.HasIndex("RequestedByUserId");
 
@@ -269,6 +309,25 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.HasIndex("RequestId");
 
                     b.ToTable("RequestStatusHistory", (string)null);
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("RequestTypeName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id")
+                        .HasName("PK__RequestT__3214EC07A8537660");
+
+                    b.ToTable("RequestType", (string)null);
                 });
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Role", b =>
@@ -402,16 +461,17 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ItsystemId")
+                        .HasColumnType("int")
+                        .HasColumnName("ITSystemId");
+
                     b.Property<int>("Sop1id")
                         .HasColumnType("int")
                         .HasColumnName("SOP1Id");
 
-                    b.Property<string>("System")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ItsystemId");
 
                     b.ToTable("SOP1Systems", (string)null);
                 });
@@ -661,11 +721,42 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Request", b =>
                 {
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Category", "Category")
+                        .WithMany("Requests")
+                        .HasForeignKey("CategoryId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Requests_Categories");
+
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Itsystem", "Itsystem")
+                        .WithMany("Requests")
+                        .HasForeignKey("ItsystemId")
+                        .HasConstraintName("FK_Requests_ITSystems");
+
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Priority", "Priority")
+                        .WithMany("Requests")
+                        .HasForeignKey("PriorityId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Requests_Priority");
+
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.RequestType", "RequestType")
+                        .WithMany("Requests")
+                        .HasForeignKey("RequestTypeId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Requests_RequestType");
+
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.User", "RequestedByUser")
                         .WithMany("Requests")
                         .HasForeignKey("RequestedByUserId")
                         .IsRequired()
                         .HasConstraintName("FK_Requests_Users");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Itsystem");
+
+                    b.Navigation("Priority");
+
+                    b.Navigation("RequestType");
 
                     b.Navigation("RequestedByUser");
                 });
@@ -675,13 +766,13 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.User", "AssignedToUser")
                         .WithMany("RequestAssignedHistories")
                         .HasForeignKey("AssignedToUserId")
-                        .HasConstraintName("FK_RequestAssignedHistory_Users");
+                        .HasConstraintName("FK_RequestAssignedHistory_Requests");
 
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Request", "Request")
                         .WithMany("RequestAssignedHistories")
                         .HasForeignKey("RequestId")
                         .IsRequired()
-                        .HasConstraintName("FK_RequestAssignedHistory_Requests");
+                        .HasConstraintName("FK_RequestAssignedHistory_Requests1");
 
                     b.Navigation("AssignedToUser");
 
@@ -694,12 +785,12 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         .WithMany("RequestMessageHistories")
                         .HasForeignKey("RequestId")
                         .IsRequired()
-                        .HasConstraintName("FK_RequestMessageHistory_Requests");
+                        .HasConstraintName("FK_RequestMessageHistory_Requests1");
 
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.User", "User")
                         .WithMany("RequestMessageHistories")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("FK_RequestMessageHistory_Users");
+                        .HasConstraintName("FK_RequestMessageHistory_Requests");
 
                     b.Navigation("Request");
 
@@ -711,13 +802,13 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.User", "ChangedByUsernameUser")
                         .WithMany("RequestStatusHistories")
                         .HasForeignKey("ChangedByUsernameUserId")
-                        .HasConstraintName("FK_RequestStatusHistory_Users");
+                        .HasConstraintName("FK_RequestStatusHistory_Requests");
 
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Request", "Request")
                         .WithMany("RequestStatusHistories")
                         .HasForeignKey("RequestId")
                         .IsRequired()
-                        .HasConstraintName("FK_RequestStatusHistory_Requests");
+                        .HasConstraintName("FK_RequestStatusHistory_Requests1");
 
                     b.Navigation("ChangedByUsernameUser");
 
@@ -741,6 +832,16 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("RoleNavigation");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Sop1system", b =>
+                {
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Itsystem", "Itsystem")
+                        .WithMany("Sop1systems")
+                        .HasForeignKey("ItsystemId")
+                        .HasConstraintName("FK_SOP1Systems_ITSystems");
+
+                    b.Navigation("Itsystem");
                 });
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.UserAuthenticationProvider", b =>
@@ -827,11 +928,28 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.Navigation("UserAuthenticationProviders");
                 });
 
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Category", b =>
+                {
+                    b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Itsystem", b =>
+                {
+                    b.Navigation("Requests");
+
+                    b.Navigation("Sop1systems");
+                });
+
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
 
                     b.Navigation("UserPermissions");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Priority", b =>
+                {
+                    b.Navigation("Requests");
                 });
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Request", b =>
@@ -841,6 +959,11 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                     b.Navigation("RequestMessageHistories");
 
                     b.Navigation("RequestStatusHistories");
+                });
+
+            modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestType", b =>
+                {
+                    b.Navigation("Requests");
                 });
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.Role", b =>

@@ -29,11 +29,15 @@ public class AutoMapperProfiles : Profile
 
         //ModelDtos
         CreateMap<AuthenticationProviderDto, AuthenticationProvider>().ReverseMap();
+        CreateMap<CategoryDto, Category>().ReverseMap();
+        CreateMap<ItsystemDto, Itsystem>().ReverseMap();
         CreateMap<PermissionDto, Permission>().ReverseMap();
+        CreateMap<PriorityDto, Priority>().ReverseMap();
         CreateMap<RequestDto, Request>().ReverseMap();
         CreateMap<RequestAssignedHistoryDto, RequestAssignedHistory>().ReverseMap();
         CreateMap<RequestMessageHistoryDto, RequestMessageHistory>().ReverseMap();
         CreateMap<RequestStatusHistoryDto, RequestStatusHistory>().ReverseMap();
+        CreateMap<RequestTypeDto, RequestType>().ReverseMap();
         CreateMap<RolePermissionGridDto, Permission>().ReverseMap();
         CreateMap<RoleDto, Role>().ReverseMap();
         CreateMap<RolePermissionDto, RolePermission>().ReverseMap();

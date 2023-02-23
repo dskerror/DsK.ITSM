@@ -16,7 +16,8 @@ namespace DsK.ITSM.Client.Components
         private int _totalItems;
         private int _currentPage;
         private string _searchString = "";
-        private bool _AccessUsersView;
+        private bool _AccessRequestView;
+        private bool _AccessRequestCreate;
         private int userId;
 
         protected override async Task OnInitializedAsync()
@@ -25,13 +26,16 @@ namespace DsK.ITSM.Client.Components
             userId = securityService.GetUserId(state.User);
             SetPermissions(state);
 
-            //if (!_AccessUsersView)
-            //_navigationManager.NavigateTo("/noaccess");
+            if (!_AccessRequestView)
+                _navigationManager.NavigateTo("/noaccess");
         }
 
         private void SetPermissions(AuthenticationState state)
         {
-            //_AccessUsersView = securityService.HasPermission(state.User, Access.Users.View);
+            _AccessRequestView = true;
+            _AccessRequestCreate = true;
+            //_AccessRequestView = securityService.HasPermission(state.User, Access.Requests.View);
+            //_AccessRequestCreate = securityService.HasPermission(state.User, Access.Requests.Create);
 
         }
 
@@ -68,6 +72,16 @@ namespace DsK.ITSM.Client.Components
         {
             _searchString = text;
             _table.ReloadServerData();
+        }
+
+        private void ViewRequest(int id)
+        {
+            _navigationManager.NavigateTo($"/ITSM/RequestViewEdit/{id}");
+        }
+
+        private void CreateRequest()
+        {
+            _navigationManager.NavigateTo("/ITSM/RequestCreate");
         }
     }
 }

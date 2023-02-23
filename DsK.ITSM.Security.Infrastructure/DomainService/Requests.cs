@@ -11,7 +11,7 @@ public partial class SecurityService
     {
         var result = new APIResult<List<RequestDto>>();
 
-        string ordering = "Id";
+        string ordering = "Id Desc";
         if (!string.IsNullOrWhiteSpace(orderBy))
         {
             string[] OrderBy = orderBy.Split(',');
@@ -22,42 +22,51 @@ public partial class SecurityService
         pageSize = pageSize == 0 ? 10 : pageSize;
         int count = 0;
         List<Request> items;
-        //if (!string.IsNullOrWhiteSpace(searchString))
-        //{
-        //    count = await db.Requests
-        //        .CountAsync();
-        //    //.Where(m => m.Username.Contains(searchString) || m.Name.Contains(searchString) || m.Email.Contains(searchString))
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
 
-        //    items = await db.Requests.OrderBy(ordering)                
-        //        .Skip((pageNumber - 1) * pageSize)
-        //        .Take(pageSize)
-        //        .ToListAsync();
-        //}
-        //else if (id != 0)
-        //{
-        //    count = await db.Users
-        //        .Where(u => u.Id == id)
-        //        .CountAsync();
+            count = await db.Requests
+                .Where(x => x.RequestedByUserId == id)
+                .Where(x =>
+                        x.Category.CategoryName.Contains(searchString) ||
+                        x.Description.Contains(searchString) ||
+                        x.Summary.Contains(searchString) ||
+                        x.Id.ToString().Contains(searchString) ||
+                        x.Itsystem.SystemName.Contains(searchString)
+                )
+                .CountAsync();
 
-        //    items = await db.Users.OrderBy(ordering)
-        //        .Where(u => u.Id == id)
-        //        .ToListAsync();
-        //}
-        //else
-        //{
-        count = await db.Requests.Where(x => x.RequestedByUserId == id).CountAsync();
 
-        items = await db.Requests.OrderBy(ordering)
-            .Include(x => x.RequestStatusHistories.OrderByDescending(i => i.Id).Take(1))
-            .Include(x => x.RequestAssignedHistories.OrderByDescending(i => i.Id).Take(1)).ThenInclude(x => x.AssignedToUser)
-            .OrderByDescending(x => x.Id)
-            .Where(x => x.RequestedByUserId == id)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-        //}
+
+            items = await db.Requests.OrderBy(ordering)
+                .Include(x => x.RequestStatusHistories.OrderByDescending(i => i.Id).Take(1))
+                .Include(x => x.RequestAssignedHistories.OrderByDescending(i => i.Id).Take(1)).ThenInclude(x => x.AssignedToUser)
+                .Where(x => x.RequestedByUserId == id && (
+                        x.Category.CategoryName.Contains(searchString) ||
+                        x.Description.Contains(searchString) ||
+                        x.Summary.Contains(searchString) ||
+                        x.Id.ToString().Contains(searchString) ||
+                        x.Itsystem.SystemName.Contains(searchString)
+                    )
+                )
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+        else
+        {
+            count = await db.Requests.Where(x => x.RequestedByUserId == id).CountAsync();
+
+            items = await db.Requests.OrderBy(ordering)
+                .Include(x => x.RequestStatusHistories.OrderByDescending(i => i.Id).Take(1))
+                .Include(x => x.RequestAssignedHistories.OrderByDescending(i => i.Id).Take(1)).ThenInclude(x => x.AssignedToUser)
+                .Where(x => x.RequestedByUserId == id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
         result.Paging.TotalItems = count;
-        result.Result = Mapper.Map<List<Request>, List<RequestDto>>(items);
+        //result.Result = Mapper.Map<List<Request>, List<RequestDto>>(items);
         return result;
     }
 

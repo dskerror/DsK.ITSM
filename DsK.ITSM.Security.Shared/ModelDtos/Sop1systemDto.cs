@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DsK.ITSM.Security.EntityFramework.Models;
+namespace DsK.ITSM.Security.Shared;
 
-public partial class Sop1system
+public partial class Sop1systemDto
 {
     public int Id { get; set; }
 
@@ -11,5 +11,5 @@ public partial class Sop1system
 
     public int? ItsystemId { get; set; }
 
-    public virtual Itsystem? Itsystem { get; set; }
+    public virtual ItsystemDto? Itsystem { get; set; }
 }

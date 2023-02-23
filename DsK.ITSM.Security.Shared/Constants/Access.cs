@@ -95,6 +95,16 @@ namespace DsK.ITSM.Security.Shared.Constants
             public const string Delete = "Users.Delete";
         }
 
+        [DisplayName("Requests")]
+        [Description("Requests Permissions")]
+        public static class Requests
+        {
+            public const string View = "Requests.View";
+            public const string Create = "Requests.Create";
+            public const string Edit = "Requests.Edit";
+            public const string Delete = "Requests.Delete";
+        }
+
 
         /// <summary>
         /// Returns a list of Permissions.
