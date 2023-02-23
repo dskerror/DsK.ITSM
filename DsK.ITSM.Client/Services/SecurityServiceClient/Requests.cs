@@ -24,14 +24,6 @@ public partial class SecurityServiceClient
         try
         {
             var responseObject = JsonConvert.DeserializeObject<APIResult<List<RequestDto>>>(responseAsString);
-            //var responseObject = JsonSerializer.Deserialize<APIResult<List<RequestDto>>>(responseAsString, new JsonSerializerOptions
-            //{
-            //    PropertyNameCaseInsensitive = true,
-            //    ReferenceHandler = ReferenceHandler.Preserve,
-            //    IncludeFields = true,
-            //    Encoder = JavaScriptEncoder.Default
-            //});
-
             return responseObject;
         }
         catch (Exception ex)

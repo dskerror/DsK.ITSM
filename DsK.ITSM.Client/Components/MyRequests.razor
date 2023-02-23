@@ -46,10 +46,22 @@
             <MudHighlighter Text="@context.RequestStatusHistories.FirstOrDefault().Status" HighlightedText="@_searchString" />
         </MudTd>
         <MudTd DataLabel="AssignedTo">
-            <MudHighlighter Text="@context.RequestAssignedHistories.FirstOrDefault().AssignedToUserId.ToString()" HighlightedText="@_searchString" />
+            <MudHighlighter Text="@returnAssisnedToUser(context)" HighlightedText="@_searchString" />
         </MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[]{5, 10, 50, 100}" />
     </PagerContent>
 </MudTable>
+
+@code {
+    private string returnAssisnedToUser(RequestDto context)
+    {
+        var AssisnedToUser = "";
+
+        if (context.RequestAssignedHistories.FirstOrDefault().AssignedToUser != null)
+            AssisnedToUser = context.RequestAssignedHistories.FirstOrDefault().AssignedToUser.Username;
+
+        return AssisnedToUser;
+    }
+}

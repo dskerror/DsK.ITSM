@@ -23,6 +23,12 @@ public partial class User
 
     public bool TwoFactorEnabled { get; set; }
 
+    public virtual ICollection<RequestAssignedHistory> RequestAssignedHistories { get; } = new List<RequestAssignedHistory>();
+
+    public virtual ICollection<RequestMessageHistory> RequestMessageHistories { get; } = new List<RequestMessageHistory>();
+
+    public virtual ICollection<RequestStatusHistory> RequestStatusHistories { get; } = new List<RequestStatusHistory>();
+
     public virtual ICollection<Request> Requests { get; } = new List<Request>();
 
     public virtual ICollection<UserAuthenticationProvider> UserAuthenticationProviders { get; } = new List<UserAuthenticationProvider>();

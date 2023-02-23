@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DsK.ITSM.Security.EntityFramework.Models;
+using System;
 using System.Collections.Generic;
 
 namespace DsK.ITSM.Security.Shared;
@@ -12,6 +13,8 @@ public partial class RequestAssignedHistoryDto
     public DateTime AssignedDateTime { get; set; }
 
     public int? AssignedToUserId { get; set; }
+
+    public virtual UserDto? AssignedToUser { get; set; }
 
     public virtual RequestDto Request { get; set; } = null!;
 }

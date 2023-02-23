@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DsK.ITSM.Security.EntityFramework.Models;
+using System;
 using System.Collections.Generic;
 
 namespace DsK.ITSM.Security.Shared;
@@ -14,6 +15,7 @@ public partial class RequestStatusHistoryDto
     public string Status { get; set; } = null!;
 
     public int? ChangedByUsernameUserId { get; set; }
+    public virtual UserDto? ChangedByUsernameUser { get; set; }
 
     public virtual RequestDto Request { get; set; } = null!;
 }

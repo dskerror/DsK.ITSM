@@ -104,3 +104,5 @@ INSERT INTO [UserAuthenticationProviders]
 --
 
 crear relaciones entre tablas request
+
+crear relaciones entre request con users (FK_RequestAssignedHistory_Users, FK_RequestMessageHistory_Users)

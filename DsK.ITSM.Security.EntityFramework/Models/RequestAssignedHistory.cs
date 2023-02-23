@@ -13,5 +13,7 @@ public partial class RequestAssignedHistory
 
     public int? AssignedToUserId { get; set; }
 
+    public virtual User? AssignedToUser { get; set; }
+
     public virtual Request Request { get; set; } = null!;
 }

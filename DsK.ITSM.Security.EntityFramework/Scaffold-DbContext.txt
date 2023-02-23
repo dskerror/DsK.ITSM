@@ -12,7 +12,7 @@
 9. Build and fix any errors.
 10. Run this command:
 	Add-Migration Initial-Migration
-11. Comment the OnConfiguring Method on the SecurityTablesTestContext.cs
+11. Comment the OnConfiguring Method on the DsKitsmContext.cs
 
 Other:
 Add-Migration: Creates a new migration class as per specified name with the Up() and Down() methods.

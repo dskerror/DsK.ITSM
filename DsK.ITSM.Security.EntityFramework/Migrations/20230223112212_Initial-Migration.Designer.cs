@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DsK.ITSM.Security.EntityFramework.Migrations
 {
     [DbContext(typeof(DsKitsmContext))]
-    [Migration("20230222174026_Initial-Migration")]
+    [Migration("20230223112212_Initial-Migration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -204,6 +204,8 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AssignedToUserId");
+
                     b.HasIndex("RequestId");
 
                     b.ToTable("RequestAssignedHistory", (string)null);
@@ -235,6 +237,8 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
                     b.HasIndex("RequestId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("RequestMessageHistory", (string)null);
                 });
 
@@ -262,6 +266,8 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
                     b.HasKey("Id")
                         .HasName("PK_TransactionDateTime");
+
+                    b.HasIndex("ChangedByUsernameUserId");
 
                     b.HasIndex("RequestId");
 
@@ -669,11 +675,18 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestAssignedHistory", b =>
                 {
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.User", "AssignedToUser")
+                        .WithMany("RequestAssignedHistories")
+                        .HasForeignKey("AssignedToUserId")
+                        .HasConstraintName("FK_RequestAssignedHistory_Users");
+
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Request", "Request")
                         .WithMany("RequestAssignedHistories")
                         .HasForeignKey("RequestId")
                         .IsRequired()
                         .HasConstraintName("FK_RequestAssignedHistory_Requests");
+
+                    b.Navigation("AssignedToUser");
 
                     b.Navigation("Request");
                 });
@@ -686,16 +699,30 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_RequestMessageHistory_Requests");
 
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.User", "User")
+                        .WithMany("RequestMessageHistories")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_RequestMessageHistory_Users");
+
                     b.Navigation("Request");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.RequestStatusHistory", b =>
                 {
+                    b.HasOne("DsK.ITSM.Security.EntityFramework.Models.User", "ChangedByUsernameUser")
+                        .WithMany("RequestStatusHistories")
+                        .HasForeignKey("ChangedByUsernameUserId")
+                        .HasConstraintName("FK_RequestStatusHistory_Users");
+
                     b.HasOne("DsK.ITSM.Security.EntityFramework.Models.Request", "Request")
                         .WithMany("RequestStatusHistories")
                         .HasForeignKey("RequestId")
                         .IsRequired()
                         .HasConstraintName("FK_RequestStatusHistory_Requests");
+
+                    b.Navigation("ChangedByUsernameUser");
 
                     b.Navigation("Request");
                 });
@@ -828,6 +855,12 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
 
             modelBuilder.Entity("DsK.ITSM.Security.EntityFramework.Models.User", b =>
                 {
+                    b.Navigation("RequestAssignedHistories");
+
+                    b.Navigation("RequestMessageHistories");
+
+                    b.Navigation("RequestStatusHistories");
+
                     b.Navigation("Requests");
 
                     b.Navigation("UserAuthenticationProviders");

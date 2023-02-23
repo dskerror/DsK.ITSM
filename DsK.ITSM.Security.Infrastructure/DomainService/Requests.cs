@@ -49,7 +49,7 @@ public partial class SecurityService
 
         items = await db.Requests.OrderBy(ordering)
             .Include(x => x.RequestStatusHistories.OrderByDescending(i => i.Id).Take(1))
-            .Include(x => x.RequestAssignedHistories.OrderByDescending(i => i.Id).Take(1))
+            .Include(x => x.RequestAssignedHistories.OrderByDescending(i => i.Id).Take(1)).ThenInclude(x => x.AssignedToUser)
             .OrderByDescending(x => x.Id)
             .Where(x => x.RequestedByUserId == id)
             .Skip((pageNumber - 1) * pageSize)

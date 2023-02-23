@@ -121,6 +121,10 @@ public partial class DsKitsmContext : DbContext
 
             entity.Property(e => e.AssignedDateTime).HasColumnType("datetime");
 
+            entity.HasOne(d => d.AssignedToUser).WithMany(p => p.RequestAssignedHistories)
+                .HasForeignKey(d => d.AssignedToUserId)
+                .HasConstraintName("FK_RequestAssignedHistory_Users");
+
             entity.HasOne(d => d.Request).WithMany(p => p.RequestAssignedHistories)
                 .HasForeignKey(d => d.RequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -138,6 +142,10 @@ public partial class DsKitsmContext : DbContext
                 .HasForeignKey(d => d.RequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_RequestMessageHistory_Requests");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RequestMessageHistories)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_RequestMessageHistory_Users");
         });
 
         modelBuilder.Entity<RequestStatusHistory>(entity =>
@@ -148,6 +156,10 @@ public partial class DsKitsmContext : DbContext
 
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TransactionDateTime).HasColumnType("datetime");
+
+            entity.HasOne(d => d.ChangedByUsernameUser).WithMany(p => p.RequestStatusHistories)
+                .HasForeignKey(d => d.ChangedByUsernameUserId)
+                .HasConstraintName("FK_RequestStatusHistory_Users");
 
             entity.HasOne(d => d.Request).WithMany(p => p.RequestStatusHistories)
                 .HasForeignKey(d => d.RequestId)

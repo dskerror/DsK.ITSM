@@ -15,5 +15,7 @@ public partial class RequestStatusHistory
 
     public int? ChangedByUsernameUserId { get; set; }
 
+    public virtual User? ChangedByUsernameUser { get; set; }
+
     public virtual Request Request { get; set; } = null!;
 }

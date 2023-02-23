@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using DsK.ITSM.Client.Services.Requests;
+using Newtonsoft.Json;
 
 namespace DsK.ITSM.Client.Services;
 
@@ -40,12 +41,13 @@ public partial class SecurityServiceClient
 
         try
         {
-            var responseObject = JsonSerializer.Deserialize<APIResult<List<UserDto>>>(responseAsString, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                ReferenceHandler = ReferenceHandler.Preserve,
-                IncludeFields = true
-            });
+            var responseObject = JsonConvert.DeserializeObject<APIResult<List<UserDto>>>(responseAsString);
+            //var responseObject = JsonSerializer.Deserialize<APIResult<List<UserDto>>>(responseAsString, new JsonSerializerOptions
+            //{
+            //    PropertyNameCaseInsensitive = true,
+            //    ReferenceHandler = ReferenceHandler.Preserve,
+            //    IncludeFields = true
+            //});
 
             return responseObject;
         }

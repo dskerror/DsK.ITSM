@@ -16,4 +16,6 @@ public partial class RequestMessageHistory
     public int? UserId { get; set; }
 
     public virtual Request Request { get; set; } = null!;
+
+    public virtual User? User { get; set; }
 }

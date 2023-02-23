@@ -359,6 +359,11 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         column: x => x.RequestId,
                         principalTable: "Requests",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_RequestAssignedHistory_Users",
+                        column: x => x.AssignedToUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -379,6 +384,11 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         name: "FK_RequestMessageHistory_Requests",
                         column: x => x.RequestId,
                         principalTable: "Requests",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_RequestMessageHistory_Users",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -401,6 +411,11 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                         column: x => x.RequestId,
                         principalTable: "Requests",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_RequestStatusHistory_Users",
+                        column: x => x.ChangedByUsernameUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -415,6 +430,11 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_RequestAssignedHistory_AssignedToUserId",
+                table: "RequestAssignedHistory",
+                column: "AssignedToUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RequestAssignedHistory_RequestId",
                 table: "RequestAssignedHistory",
                 column: "RequestId");
@@ -425,9 +445,19 @@ namespace DsK.ITSM.Security.EntityFramework.Migrations
                 column: "RequestId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RequestMessageHistory_UserId",
+                table: "RequestMessageHistory",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Requests_RequestedByUserId",
                 table: "Requests",
                 column: "RequestedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestStatusHistory_ChangedByUsernameUserId",
+                table: "RequestStatusHistory",
+                column: "ChangedByUsernameUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RequestStatusHistory_RequestId",
