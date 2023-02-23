@@ -7,7 +7,7 @@ using System.Linq.Dynamic.Core;
 namespace DsK.ITSM.Security.Infrastructure;
 public partial class SecurityService
 {
-    public async Task<APIResult<List<RequestDto>>> MyRequestsGet(int id, int pageNumber, int pageSize, string searchString, string orderBy)
+    public async Task<APIResult<List<RequestDto>>> RequestsGet(int id, int pageNumber, int pageSize, string searchString, string orderBy)
     {
         var result = new APIResult<List<RequestDto>>();
 
@@ -50,6 +50,7 @@ public partial class SecurityService
         items = await db.Requests.OrderBy(ordering)
             .Include(x => x.RequestStatusHistories.OrderByDescending(i => i.Id).Take(1))
             .Include(x => x.RequestAssignedHistories.OrderByDescending(i => i.Id).Take(1))
+            .OrderByDescending(x => x.Id)
             .Where(x => x.RequestedByUserId == id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

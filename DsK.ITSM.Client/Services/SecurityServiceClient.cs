@@ -83,6 +83,14 @@ public partial class SecurityServiceClient
         else
             return false;
     }
+
+    public int GetUserId(ClaimsPrincipal user)
+    {
+        string userId = user.Claims.Where(_ => _.Type == "UserId").Select(_ => _.Value).FirstOrDefault();
+        int userIdParsed = 0;
+        int.TryParse(userId, out userIdParsed);
+        return userIdParsed;
+    }
     private bool UserHasPermission(Claim permissions, string permission)
     {
         if (permissions != null)

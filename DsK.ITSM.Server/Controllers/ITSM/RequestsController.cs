@@ -6,16 +6,16 @@ using DsK.ITSM.Security.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DsK.ITSM.Server.Controllers.Security
+namespace DsK.ITSM.Server.Controllers.ITSM
 {
-    [Route("api/Security/[controller]")]
+    [Route("api/ITSM/[controller]")]
     [ApiController]
-    public class DashboardController : ControllerBase
+    public class RequestsController : ControllerBase
     {
         private readonly SecurityService SecurityService;
         private IMapper Mapper;
 
-        public DashboardController(SecurityService securityService, IMapper Mapper)
+        public RequestsController(SecurityService securityService, IMapper Mapper)
         {
             SecurityService = securityService;
             this.Mapper = Mapper;
@@ -23,9 +23,9 @@ namespace DsK.ITSM.Server.Controllers.Security
 
         [HttpGet]
         //[Authorize(Roles = $"{Access.Admin}, {Access.Users.View}")]
-        public async Task<IActionResult> MyRequestsGet(int id, int pageNumber, int pageSize, string searchString = null, string orderBy = null)
+        public async Task<IActionResult> RequestsGet(int id, int pageNumber, int pageSize, string searchString = null, string orderBy = null)
         {
-            var result = await SecurityService.MyRequestsGet(id, pageNumber, pageSize, searchString, orderBy);
+            var result = await SecurityService.RequestsGet(id, pageNumber, pageSize, searchString, orderBy);
             return Ok(result);
         }
     }

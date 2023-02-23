@@ -1,0 +1,55 @@
+﻿@using DsK.ITSM.Security.Shared;
+@using System.Security.Claims;
+
+<h2>My Requests</h2>
+
+@if (!_loaded)
+{
+    <h3>Loading...</h3>
+    <MudProgressLinear Color="Color.Primary" Striped="true" Size="Size.Large" Value="75" Class="my-7" />
+}
+
+<MudTable Elevation="25" RowsPerPage="5" ServerData="@(new Func<TableState, Task<TableData<RequestDto>>>(ServerReload))" Hover="true" Dense="true" Bordered="true" Striped="true" @ref="_table">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>View Request</MudTh>
+        <MudTh><MudTableSortLabel T="RequestDto" SortLabel="Id">Request Number</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="RequestDto" SortLabel="Summary">Summary</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="RequestDto" SortLabel="System">System</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="RequestDto" SortLabel="Category">Category</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="RequestDto" SortLabel="RequestDate">Request Date</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="RequestDto" SortLabel="Status">Status</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel T="RequestDto" SortLabel="AssignedTo">AssignedTo</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ViewRequest">
+        </MudTd>
+        <MudTd DataLabel="Id">
+            <MudHighlighter Text="@context.Id.ToString()" HighlightedText="@_searchString" />
+        </MudTd>
+        <MudTd DataLabel="Summary">
+            <MudHighlighter Text="@context.Summary" HighlightedText="@_searchString" />
+        </MudTd>
+        <MudTd DataLabel="System">
+            <MudHighlighter Text="@context.System" HighlightedText="@_searchString" />
+        </MudTd>
+        <MudTd DataLabel="Category">
+            <MudHighlighter Text="@context.Category" HighlightedText="@_searchString" />
+        </MudTd>
+        <MudTd DataLabel="RequestDateTime">
+            <MudHighlighter Text="@context.RequestDateTime.ToShortDateString()" HighlightedText="@_searchString" />
+        </MudTd>
+        <MudTd DataLabel="Status">
+            <MudHighlighter Text="@context.RequestStatusHistories.FirstOrDefault().Status" HighlightedText="@_searchString" />
+        </MudTd>
+        <MudTd DataLabel="AssignedTo">
+            <MudHighlighter Text="@context.RequestAssignedHistories.FirstOrDefault().AssignedToUserId.ToString()" HighlightedText="@_searchString" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[]{5, 10, 50, 100}" />
+    </PagerContent>
+</MudTable>
