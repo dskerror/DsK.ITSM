@@ -15,5 +15,9 @@
             }
             return url;
         }
+        public static string RequestedByUserListGet()
+        {
+            return "api/ITSM/Requests/RequestedByUserListGet";
+        }
     }
 }

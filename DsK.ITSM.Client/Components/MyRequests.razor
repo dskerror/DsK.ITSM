@@ -47,10 +47,10 @@
             <MudHighlighter Text="@context.Summary" HighlightedText="@_searchString" />
         </MudTd>
         <MudTd DataLabel="System">
-            @*<MudHighlighter Text="@context.System" HighlightedText="@_searchString" />*@
+            <MudHighlighter Text="@returnITSystem(context)" HighlightedText="@_searchString" />
         </MudTd>
         <MudTd DataLabel="Category">
-            @*<MudHighlighter Text="@context.Category" HighlightedText="@_searchString" />*@
+            <MudHighlighter Text="@context.Category.CategoryName" HighlightedText="@_searchString" />
         </MudTd>
         <MudTd DataLabel="RequestDateTime">
             <MudHighlighter Text="@context.RequestDateTime.ToShortDateString()" HighlightedText="@_searchString" />
@@ -70,11 +70,21 @@
 @code {
     private string returnAssisnedToUser(RequestDto context)
     {
-        var AssisnedToUser = "";
+        var value = "";
 
         if (context.RequestAssignedHistories.FirstOrDefault().AssignedToUser != null)
-            AssisnedToUser = context.RequestAssignedHistories.FirstOrDefault().AssignedToUser.Username;
+            value = context.RequestAssignedHistories.FirstOrDefault().AssignedToUser.Name;
 
-        return AssisnedToUser;
+        return value;
+    }
+
+    private string returnITSystem(RequestDto context)
+    {
+        var value = "";
+
+        if (context.Itsystem != null)
+            value = context.Itsystem.SystemName;
+
+        return value;
     }
 }

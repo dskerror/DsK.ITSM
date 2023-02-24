@@ -41,12 +41,16 @@ public partial class SecurityService
             items = await db.Requests.OrderBy(ordering)
                 .Include(x => x.RequestStatusHistories.OrderByDescending(i => i.Id).Take(1))
                 .Include(x => x.RequestAssignedHistories.OrderByDescending(i => i.Id).Take(1)).ThenInclude(x => x.AssignedToUser)
+                .Include(x => x.Category)
+                .Include(x => x.Itsystem)
                 .Where(x => x.RequestedByUserId == id && (
                         x.Category.CategoryName.Contains(searchString) ||
                         x.Description.Contains(searchString) ||
                         x.Summary.Contains(searchString) ||
                         x.Id.ToString().Contains(searchString) ||
-                        x.Itsystem.SystemName.Contains(searchString)
+                        x.Itsystem.SystemName.Contains(searchString) ||
+                        x.RequestStatusHistories.OrderByDescending(i => i.Id).FirstOrDefault().Status.Contains(searchString) ||
+                        x.RequestAssignedHistories.OrderByDescending(i => i.Id).FirstOrDefault().AssignedToUser.Name.Contains(searchString)
                     )
                 )
                 .Skip((pageNumber - 1) * pageSize)
@@ -60,13 +64,23 @@ public partial class SecurityService
             items = await db.Requests.OrderBy(ordering)
                 .Include(x => x.RequestStatusHistories.OrderByDescending(i => i.Id).Take(1))
                 .Include(x => x.RequestAssignedHistories.OrderByDescending(i => i.Id).Take(1)).ThenInclude(x => x.AssignedToUser)
+                .Include(x => x.Category)
+                .Include(x => x.Itsystem)
                 .Where(x => x.RequestedByUserId == id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
         result.Paging.TotalItems = count;
-        //result.Result = Mapper.Map<List<Request>, List<RequestDto>>(items);
+        result.Result = Mapper.Map<List<Request>, List<RequestDto>>(items);
+        return result;
+    }
+
+    public async Task<APIResult<List<UserDto>>> RequestedByUserListGet()
+    {
+        var result = new APIResult<List<UserDto>>();
+        List<User> items = await db.Users.OrderBy(x => x.Name).ToListAsync();
+        result.Result = Mapper.Map<List<User>, List<UserDto>>(items);
         return result;
     }
 

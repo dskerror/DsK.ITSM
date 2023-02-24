@@ -13,12 +13,10 @@ namespace DsK.ITSM.Server.Controllers.ITSM
     public class RequestsController : ControllerBase
     {
         private readonly SecurityService SecurityService;
-        private IMapper Mapper;
 
-        public RequestsController(SecurityService securityService, IMapper Mapper)
+        public RequestsController(SecurityService securityService)
         {
             SecurityService = securityService;
-            this.Mapper = Mapper;
         }
 
         [HttpGet]
@@ -28,6 +26,14 @@ namespace DsK.ITSM.Server.Controllers.ITSM
             var result = await SecurityService.RequestsGet(id, pageNumber, pageSize, searchString, orderBy);
             return Ok(result);
         }
+
+        [HttpGet]
+        //[Authorize(Roles = $"{Access.Admin}, {Access.Users.View}")]
+        [Route("RequestedByUserListGet")]
+        public async Task<IActionResult> RequestedByUserListGet()
+        {
+            var result = await SecurityService.RequestedByUserListGet();
+            return Ok(result);
+        }
     }
 }
-

@@ -13,14 +13,14 @@ public partial class RequestCreateDto
     [Required]
     [StringLength(100, MinimumLength = 3)]
     public string? Description { get; set; }
-
-    public string System { get; set; } = null!;
-
-    public string Priority { get; set; } = null!;
-
-    public string Category { get; set; } = null!;
-
-    public string RequestType { get; set; } = null!;
-
+    public string RequestedByUser { get; set; } = null!;
     public int RequestedByUserId { get; set; }
+
+    public int? ItsystemId { get; set; }
+
+    public int PriorityId { get; set; }
+
+    public int CategoryId { get; set; }
+
+    public int RequestTypeId { get; set; }
 }
