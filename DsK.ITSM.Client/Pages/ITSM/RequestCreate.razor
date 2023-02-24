@@ -16,7 +16,7 @@ else
             <MudCardContent>
                 <MudAutocomplete T="string" Label="Requested By" @bind-Value="model.RequestedByUser" On
                              SearchFunc="@SearchRequestedByUserList"
-                             CoerceText="true" CoerceValue="false" />
+                             CoerceText="true" CoerceValue="true" MaxItems=null />
                 <MudTextField Label="Summary" @bind-Value="model.Summary"
                           For="@(()=>model.Summary)">
                 </MudTextField>
