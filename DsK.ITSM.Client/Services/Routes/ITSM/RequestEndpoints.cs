@@ -19,5 +19,7 @@
         {
             return "api/ITSM/Requests/RequestedByUserListGet";
         }
+
+        public static string Post = "api/ITSM/Requests";
     }
 }

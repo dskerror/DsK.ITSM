@@ -1,6 +1,7 @@
 ﻿using DsK.ITSM.Security.Shared;
 using DsK.ITSM.Client.Services.Requests;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
 
 namespace DsK.ITSM.Client.Services;
 public partial class SecurityServiceClient
@@ -47,5 +48,16 @@ public partial class SecurityServiceClient
             Console.Write(ex.Message);
             return null;
         }
+    }
+
+    public async Task<APIResult<RequestDto>> RequestCreateAsync(RequestCreateDto model)
+    {
+        await PrepareBearerToken();
+        var response = await _httpClient.PostAsJsonAsync(Routes.RequestsEndpoints.Post, model);
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        var result = await response.Content.ReadFromJsonAsync<APIResult<RequestDto>>();
+        return result;
     }
 }

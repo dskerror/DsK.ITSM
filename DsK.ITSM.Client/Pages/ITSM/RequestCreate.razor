@@ -14,8 +14,8 @@ else
         <ValidationSummary />
         <MudCard Class="mb-2">
             <MudCardContent>
-                <MudAutocomplete T="string" Label="Requested By" @bind-Value="model.RequestedByUser" On
-                             SearchFunc="@SearchRequestedByUserList"
+                <MudAutocomplete T="string" Label="Requested By" @bind-Value="model.RequestedBy" On
+                             SearchFunc="@SearchRequestedByList"
                              CoerceText="true" CoerceValue="true" MaxItems=null />
                 <MudTextField Label="Summary" @bind-Value="model.Summary"
                           For="@(()=>model.Summary)">
@@ -26,9 +26,13 @@ else
                 <MudTextField Label="ItsystemId" @bind-Value="model.ItsystemId"
                           For="@(()=>model.ItsystemId)">
                 </MudTextField>
-                <MudTextField Label="CategoryId" @bind-Value="model.CategoryId"
-                          For="@(()=>model.CategoryId)">
-                </MudTextField>
+
+                <MudSelect Label="Categories" T="CategoryDto" @bind-Value="@model.Category" @bind-SelectedValues="CategoryListDefaultOptions">
+                    @foreach (var item in CategoryList)
+                    {
+                        <MudSelectItem Value="item">@item.CategoryName</MudSelectItem>
+                    }
+                </MudSelect>
 
                 <MudTextField Label="PriorityId" @bind-Value="model.PriorityId"
                           For="@(()=>model.PriorityId)">

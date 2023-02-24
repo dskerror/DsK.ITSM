@@ -11,18 +11,29 @@ public partial class RequestCreate
     private RequestCreateDto model = new RequestCreateDto();
     private bool _loaded;
     private bool _AccessRequestCreate;
-    private List<UserDto> RequestedByUserList;
+    private List<UserDto> RequestedByList;
+    private List<CategoryDto> CategoryList;
+    private HashSet<CategoryDto> CategoryListDefaultOptions { get; set; }
+    private int userId;
 
     protected override async Task OnInitializedAsync()
     {
         var state = await authenticationState;
+        userId = securityService.GetUserId(state.User);
         SetPermissions(state);
 
         if (!_AccessRequestCreate)
             _navigationManager.NavigateTo("/noaccess");
 
-        var response = await securityService.RequestedByUserListGetAsync();
-        RequestedByUserList = response.Result;
+        var responseRequestedByUserList = await securityService.RequestedByUserListGetAsync();
+        RequestedByList = responseRequestedByUserList.Result;
+        model.RequestedBy = await SearchUserNameById(userId);
+
+        var responseGategoriesGet = await securityService.CategoriesGetAsync();
+        CategoryList = responseGategoriesGet.Result;
+
+        CategoryListDefaultOptions = new HashSet<CategoryDto>() { CategoryList.Where(x => x.CategoryName == "Service Request").FirstOrDefault() };
+
         _loaded = true;
     }
 
@@ -32,19 +43,18 @@ public partial class RequestCreate
         //_AccessRequestCreate = securityService.HasPermission(state.User, Access.Requests.Create);
     }
 
-    private async Task<IEnumerable<string>> SearchRequestedByUserList(string value)
-    {   
-        return RequestedByUserList.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(x => x.Name).ToList();
-    }
-
-    private async Task<IEnumerable<UserDto>> SearchRequestedByUserList2(string value)
+    private async Task<string> SearchUserNameById(int UserId)
     {
-        return RequestedByUserList.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        return RequestedByList.Where(x => x.Id == UserId).FirstOrDefault().Name;
     }
-
+    private async Task<IEnumerable<string>> SearchRequestedByList(string value)
+    {
+        return RequestedByList.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(x => x.Name).ToList();
+    }
     private async Task Create()
     {
-        //var result = await securityService.Re(model);
+        Snackbar.Add(model.Category.CategoryName, Severity.Error);
+        //var result = await securityService.RequestCreateAsync(model);
 
         //if (result != null)
         //    if (result.HasError)
@@ -52,10 +62,9 @@ public partial class RequestCreate
         //    else
         //    {
         //        Snackbar.Add(result.Message, Severity.Success);
-        //        _navigationManager.NavigateTo($"/admin/roleviewedit/{result.Result.Id}");
+        //        //_navigationManager.NavigateTo($"/ITSM/RoleViewEdit/{result.Result.Id}");
         //    }
         //else
         //    Snackbar.Add("An Unknown Error Has Occured", Severity.Error);
-
     }
 }
