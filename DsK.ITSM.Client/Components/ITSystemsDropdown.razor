@@ -1,0 +1,13 @@
+﻿@if (!_loaded)
+{
+    <h3>Loading IT Systems Dropdown...</h3>
+}
+else
+{
+    <MudSelect Value="Value" ValueChanged="@UpdateValue" T="ItsystemDto" Label="IT Systems">
+        @foreach (var item in List)
+        {
+            <MudSelectItem Value="item" />
+        }
+    </MudSelect>
+}

@@ -10,7 +10,7 @@ public partial class SecurityService
     public async Task<APIResult<List<ItsystemDto>>> ITSystemsGet()
     {
         var result = new APIResult<List<ItsystemDto>>();
-        List<Itsystem>  items = await db.Itsystems.OrderBy(x=>x.SystemName).ToListAsync();
+        var items = await db.Itsystems.OrderBy(x => x.SystemName).ToListAsync();
         result.Result = Mapper.Map<List<Itsystem>, List<ItsystemDto>>(items);
         return result;
     }

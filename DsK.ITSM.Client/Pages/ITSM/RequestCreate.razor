@@ -23,20 +23,10 @@ else
                 <MudTextField Label="Description" @bind-Value="model.Description"
                           For="@(()=>model.Description)">
                 </MudTextField>
-                <MudTextField Label="ItsystemId" @bind-Value="model.ItsystemId"
-                          For="@(()=>model.ItsystemId)">
-                </MudTextField>
 
-                <MudSelect Label="Categories" T="CategoryDto" @bind-Value="@model.Category" @bind-SelectedValues="CategoryListDefaultOptions">
-                    @foreach (var item in CategoryList)
-                    {
-                        <MudSelectItem Value="item">@item.CategoryName</MudSelectItem>
-                    }
-                </MudSelect>
-
-                <MudTextField Label="PriorityId" @bind-Value="model.PriorityId"
-                          For="@(()=>model.PriorityId)">
-                </MudTextField>
+                <ITSystemsDropdown @bind-Value="model.ItSystem" />
+                <CategoriesDropdown @bind-Value="model.Category" />
+                <PriorityDropdown @bind-Value="model.Priority" />
             </MudCardContent>
         </MudCard>
 

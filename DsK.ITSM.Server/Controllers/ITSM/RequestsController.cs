@@ -27,6 +27,14 @@ namespace DsK.ITSM.Server.Controllers.ITSM
             return Ok(result);
         }
 
+        [HttpPost]
+        //[Authorize(Roles = $"{Access.Admin}, {Access.Roles.Create}")]
+        public async Task<IActionResult> RequestsCreate(RequestCreateDto model)
+        {
+            var result = await SecurityService.RequestCreate(model);
+            return Ok(result);
+        }
+
         [HttpGet]
         //[Authorize(Roles = $"{Access.Admin}, {Access.Users.View}")]
         [Route("RequestedByUserListGet")]

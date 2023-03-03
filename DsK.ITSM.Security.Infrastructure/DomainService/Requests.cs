@@ -75,7 +75,6 @@ public partial class SecurityService
         result.Result = Mapper.Map<List<Request>, List<RequestDto>>(items);
         return result;
     }
-
     public async Task<APIResult<List<UserDto>>> RequestedByUserListGet()
     {
         var result = new APIResult<List<UserDto>>();
@@ -84,60 +83,34 @@ public partial class SecurityService
         return result;
     }
 
-    //public async Task<APIResult<UserDto>> UserCreate(UserCreateDto model)
-    //{
-    //    APIResult<UserDto> result = new APIResult<UserDto>();
-    //    int recordsCreated = 0;
+    public async Task<APIResult<RequestDto>> RequestCreate(RequestCreateDto model)
+    {
+        APIResult<RequestDto> result = new APIResult<RequestDto>();
+        int recordsCreated = 0;
 
-    //    var record = new User();
-    //    Mapper.Map(model, record);
+        var record = new Request();
+        Mapper.Map(model, record);
 
-    //    await db.Users.AddAsync(record);
+        await db.Requests.AddAsync(record);
 
-    //    try
-    //    {
-    //        recordsCreated = await db.SaveChangesAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        result.HasError = true;
-    //        result.Message = ex.InnerException.Message;
-    //    }
+        try
+        {
+            recordsCreated = await db.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            result.HasError = true;
+            result.Message = ex.InnerException.Message;
+        }
 
-    //    var userRole = new UserRole()
-    //    {
-    //        RoleId = 2,
-    //        UserId = record.Id
-    //    };
-    //    await db.UserRoles.AddAsync(userRole);
+        if (recordsCreated == 1)
+        {
+            result.Result = Mapper.Map(record, result.Result);
+            result.Message = "Record Created";
+        }
 
-    //    var userAuthenticationProvider = new UserAuthenticationProvider()
-    //    {
-    //        AuthenticationProviderId = 1,
-    //        UserId = record.Id,
-    //        Username= record.Username,
-    //    };
-
-    //    await db.UserAuthenticationProviders.AddAsync(userAuthenticationProvider);
-
-    //    try
-    //    {
-    //        await db.SaveChangesAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        result.HasError = true;
-    //        result.Message = ex.InnerException.Message;
-    //    }
-
-    //    if (recordsCreated == 1)
-    //    {
-    //        result.Result = Mapper.Map(record, result.Result);
-    //        result.Message = "Record Created";
-    //    }
-
-    //    return result;
-    //}
+        return result;
+    }
 
     //public async Task<APIResult<string>> UserUpdate(UserDto model)
     //{

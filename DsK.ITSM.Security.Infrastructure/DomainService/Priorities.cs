@@ -9,10 +9,19 @@ public partial class SecurityService
 {
     public async Task<APIResult<List<PriorityDto>>> PrioritiesGet()
     {
-        var result = new APIResult<List<PriorityDto>>();
-        List<Priority>  items = await db.Priorities.OrderBy(x=>x.PriorityName).ToListAsync();
-        result.Result = Mapper.Map<List<Priority>, List<PriorityDto>>(items);
-        return result;
+        try
+        {
+            var result = new APIResult<List<PriorityDto>>();
+            var items = await db.Priorities.ToListAsync();
+            result.Result = Mapper.Map<List<Priority>, List<PriorityDto>>(items);
+            return result;
+
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
     }
 }
 

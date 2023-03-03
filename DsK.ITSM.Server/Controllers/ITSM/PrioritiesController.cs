@@ -21,7 +21,7 @@ namespace DsK.ITSM.Server.Controllers.ITSM
 
         [HttpGet]
         //[Authorize(Roles = $"{Access.Admin}, {Access.Users.View}")]
-        public async Task<IActionResult> PrioritiesesGet()
+        public async Task<IActionResult> PrioritiesGet()
         {
             var result = await SecurityService.PrioritiesGet();
             return Ok(result);

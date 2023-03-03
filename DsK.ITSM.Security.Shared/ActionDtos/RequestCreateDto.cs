@@ -20,9 +20,11 @@ public partial class RequestCreateDto
     public string RequestedBy { get; set; } = null!;
     public int RequestedByUserId { get; set; }
 
-    public int? ItsystemId { get; set; }
+    [Required]
+    public ItsystemDto ItSystem { get; set; }
 
-    public int PriorityId { get; set; }
+    [Required]
+    public PriorityDto Priority { get; set; }    
 
     [Required]
     public CategoryDto Category { get; set; }

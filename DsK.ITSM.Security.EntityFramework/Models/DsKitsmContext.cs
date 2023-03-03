@@ -114,6 +114,8 @@ public partial class DsKitsmContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Priority__3214EC073C9C5F2E");
 
+            entity.ToTable("Priority");
+
             entity.Property(e => e.PriorityName)
                 .HasMaxLength(10)
                 .IsUnicode(false);

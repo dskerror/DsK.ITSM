@@ -12,8 +12,6 @@ public partial class RequestCreate
     private bool _loaded;
     private bool _AccessRequestCreate;
     private List<UserDto> RequestedByList;
-    private List<CategoryDto> CategoryList;
-    private HashSet<CategoryDto> CategoryListDefaultOptions { get; set; }
     private int userId;
 
     protected override async Task OnInitializedAsync()
@@ -28,12 +26,7 @@ public partial class RequestCreate
         var responseRequestedByUserList = await securityService.RequestedByUserListGetAsync();
         RequestedByList = responseRequestedByUserList.Result;
         model.RequestedBy = await SearchUserNameById(userId);
-
-        var responseGategoriesGet = await securityService.CategoriesGetAsync();
-        CategoryList = responseGategoriesGet.Result;
-
-        CategoryListDefaultOptions = new HashSet<CategoryDto>() { CategoryList.Where(x => x.CategoryName == "Service Request").FirstOrDefault() };
-
+     
         _loaded = true;
     }
 
@@ -53,18 +46,17 @@ public partial class RequestCreate
     }
     private async Task Create()
     {
-        Snackbar.Add(model.Category.CategoryName, Severity.Error);
-        //var result = await securityService.RequestCreateAsync(model);
+        var result = await securityService.RequestCreateAsync(model);
 
-        //if (result != null)
-        //    if (result.HasError)
-        //        Snackbar.Add(result.Message, Severity.Error);
-        //    else
-        //    {
-        //        Snackbar.Add(result.Message, Severity.Success);
-        //        //_navigationManager.NavigateTo($"/ITSM/RoleViewEdit/{result.Result.Id}");
-        //    }
-        //else
-        //    Snackbar.Add("An Unknown Error Has Occured", Severity.Error);
+        if (result != null)
+            if (result.HasError)
+                Snackbar.Add(result.Message, Severity.Error);
+            else
+            {
+                Snackbar.Add(result.Message, Severity.Success);
+                //_navigationManager.NavigateTo($"/ITSM/RoleViewEdit/{result.Result.Id}");
+            }
+        else
+            Snackbar.Add("An Unknown Error Has Occured", Severity.Error);
     }
 }

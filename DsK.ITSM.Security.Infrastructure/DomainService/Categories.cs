@@ -10,7 +10,7 @@ public partial class SecurityService
     public async Task<APIResult<List<CategoryDto>>> CategoriesGet()
     {
         var result = new APIResult<List<CategoryDto>>();
-        List<Category>  items = await db.Categories.OrderBy(x=>x.CategoryName).ToListAsync();
+        var items = await db.Categories.OrderBy(x => x.CategoryName).ToListAsync();
         result.Result = Mapper.Map<List<Category>, List<CategoryDto>>(items);
         return result;
     }
