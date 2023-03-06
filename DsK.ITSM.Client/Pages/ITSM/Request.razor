@@ -1,4 +1,4 @@
-﻿@page "/ITSM/RequestCreate"
+﻿@page "/admin/request/{id:int}"
 
 <h3><NavLink href="/">My Requests</NavLink> > Create Request</h3>
 
@@ -9,7 +9,7 @@
 }
 else
 {
-    <EditForm Model="model" OnValidSubmit="Create">
+    <EditForm Model="model" >
         <DataAnnotationsValidator />
         <ValidationSummary />
         <MudCard Class="mb-2">

@@ -90,7 +90,8 @@ public partial class SecurityService
 
         var record = new Request();
         Mapper.Map(model, record);
-
+        
+        record.RequestDateTime = DateTime.Now;
         await db.Requests.AddAsync(record);
 
         try
@@ -106,7 +107,7 @@ public partial class SecurityService
         if (recordsCreated == 1)
         {
             result.Result = Mapper.Map(record, result.Result);
-            result.Message = "Record Created";
+            result.Message = "Request Created";
         }
 
         return result;

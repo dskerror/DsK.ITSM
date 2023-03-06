@@ -11,7 +11,7 @@ public class AutoMapperProfiles : Profile
         CreateMap<AuthenticationProviderUpdateDto, AuthenticationProvider>().ReverseMap();
         CreateMap<PermissionCreateDto, Permission>().ReverseMap();
         CreateMap<PermissionUpdateDto, Permission>().ReverseMap();
-        CreateMap<RequestCreateDto, RequestDto>().ReverseMap();
+        CreateMap<RequestCreateDto, Request>().ReverseMap();
         CreateMap<RolePermissionChangeDto, RolePermission>().ReverseMap();        
         CreateMap<RoleCreateDto, Role>().ReverseMap();
         CreateMap<RoleUpdateDto, Role>().ReverseMap();

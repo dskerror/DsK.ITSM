@@ -13,6 +13,9 @@ public partial class RequestCreate
     private bool _AccessRequestCreate;
     private List<UserDto> RequestedByList;
     private int userId;
+    private ItsystemDto itsystemDto;
+    private PriorityDto priorityDto;
+    private CategoryDto categoryDto;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,6 +49,12 @@ public partial class RequestCreate
     }
     private async Task Create()
     {
+        model.RequestedByUserId= userId;
+        model.RequestTypeId = 1;
+        model.CategoryId = categoryDto.Id;
+        model.PriorityId = priorityDto.Id;
+        model.ItsystemId = itsystemDto.Id;
+
         var result = await securityService.RequestCreateAsync(model);
 
         if (result != null)
@@ -54,7 +63,7 @@ public partial class RequestCreate
             else
             {
                 Snackbar.Add(result.Message, Severity.Success);
-                //_navigationManager.NavigateTo($"/ITSM/RoleViewEdit/{result.Result.Id}");
+                //_navigationManager.NavigateTo($"/ITSM/RequestsViewEdit/{result.Result.Id}");
             }
         else
             Snackbar.Add("An Unknown Error Has Occured", Severity.Error);
