@@ -1,0 +1,10 @@
+﻿@if (!_loaded)
+{
+    <h3>Loading Categories Dropdown...</h3>
+}
+else
+{
+    <MudAutocomplete T="UserDto" Label="Requested By" @bind-Value="RequestedByUser" On
+        SearchFunc="@SearchRequestedByList"
+        CoerceText="true" CoerceValue="true" MaxItems=null />
+}

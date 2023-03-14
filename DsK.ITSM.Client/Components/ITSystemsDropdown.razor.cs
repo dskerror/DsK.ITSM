@@ -1,8 +1,5 @@
-﻿using DsK.ITSM.Security.EntityFramework.Models;
-using DsK.ITSM.Security.Shared;
+﻿using DsK.ITSM.Security.Shared;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using System.IO;
 
 namespace DsK.ITSM.Client.Components
 {
