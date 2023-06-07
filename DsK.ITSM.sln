@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM.Security.Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM.Security.EntityFramework", "DsK.ITSM.Security.EntityFramework\DsK.ITSM.Security.EntityFramework.csproj", "{CB6B4CE8-FDB0-4F65-8FE4-328752A3E962}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DsK.ITSM", "DsK.ITSM\DsK.ITSM.csproj", "{AE89996E-9675-459A-B18B-770699E4DEC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM", "DsK.ITSM\DsK.ITSM.csproj", "{AE89996E-9675-459A-B18B-770699E4DEC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

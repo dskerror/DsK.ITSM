@@ -1,71 +1,53 @@
 ﻿using Blazored.LocalStorage;
 using DsK.ITSM.Dto;
+using DsK.ITSM.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using System.Net.Http;
 
 namespace DsK.ITSM.Pages;
 public partial class Login
 {
-    private UserLoginDto userLoginModel = new UserLoginDto() { AuthenticationProviderId = 1};
+    private UserLoginDto userLoginModel = new UserLoginDto() { AuthenticationProviderId = 1 };
     private bool _LoginButtonDisabled;
     private bool _passwordVisibility;
     private InputType _passwordInput = InputType.Password;
     private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
 
+    [Inject]
+    protected ILocalStorageService _localStorageService { get; set; }
+    [Inject]
+    protected AuthenticationStateProvider _authenticationStateProvider { get; set; }
+    [Inject]
+    protected SecurityService _securityService { get; set; }
+    //public Login(ILocalStorageService localStorageService, AuthenticationStateProvider authenticationStateProvider, SecurityService securityService)
+    //{        
+    //    _localStorageService = localStorageService;        
+    //    _authenticationStateProvider = authenticationStateProvider;
+    //    _securityService = securityService;
+    //}
+
     private async Task SubmitAsync()
     {
+
         _LoginButtonDisabled = true;
-        //bool result = await securityService.LoginAsync(userLoginModel);
-        //if (result)
-        //{
-        //    _navigationManager.NavigateTo("/");
-        //    Snackbar.Add("Login Successful", Severity.Success);
-        //}
-        //else
-        //    Snackbar.Add("Username and/or Password incorrect", Severity.Error);
+        userLoginModel.AuthenticationProviderId = 2;
+        var serviceResponse = await _securityService.UserLogin(userLoginModel);
+        if (serviceResponse == null || serviceResponse.HasError)
+        {
+            await _localStorageService.SetItemAsync("token", serviceResponse.Result.Token);
+            await _localStorageService.SetItemAsync("refreshToken", serviceResponse.Result.RefreshToken);
+            (_authenticationStateProvider as CustomAuthenticationStateProvider).Notify();
+            _navigationManager.NavigateTo("/");
+            Snackbar.Add("Login Successful", Severity.Success);
+        }
+        else
+            Snackbar.Add("Username and/or Password incorrect", Severity.Error);
 
         _LoginButtonDisabled = false;
     }
 
-    private void LoginAsync()
-    {
-        APIResult<TokenModel> result = new APIResult<TokenModel>();
-        var user = await AuthenticateUser(model);
 
-        if (user == null)
-        {
-            result.HasError = true;
-            return result;
-        }
-
-        var token = await GenerateAuthenticationToken(user);
-
-        db.UserTokens.Add(new UserToken()
-        {
-            UserId = user.Id,
-            RefreshToken = token.RefreshToken,
-            TokenRefreshedDateTime = DateTime.Now,
-            TokenCreatedDateTime = DateTime.Now
-        });
-
-        await db.SaveChangesAsync();
-
-        result.Result = token;
-        return result;
-
-        var tokenModel = await SecurityService.UserLogin(model);
-
-        if (tokenModel == null)
-            return NotFound();
-
-        return Ok(tokenModel);
-
-        await _localStorageService.SetItemAsync("token", result.Result.Token);
-        await _localStorageService.SetItemAsync("refreshToken", result.Result.RefreshToken);
-        (_authenticationStateProvider as CustomAuthenticationStateProvider).Notify();
-        return true;
-    }
     void TogglePasswordVisibility()
     {
         if (_passwordVisibility)
@@ -81,4 +63,5 @@ public partial class Login
             _passwordInput = InputType.Text;
         }
     }
+
 }

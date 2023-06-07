@@ -1,17 +1,51 @@
 using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using DsK.ITSM.Models;
+using DsK.ITSM.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MudBlazor;
 using MudBlazor.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddScoped<SecurityService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+
+builder.Services.AddDbContext<DsKitsmContext>(options =>
+{
+    options.UseSqlServer("Server=.;Database=DsKITSM;Trusted_Connection=True;Trust Server Certificate=true");
+});
+
+builder.Services.Configure<TokenSettingsModel>(builder.Configuration.GetSection("TokenSettings"));
+var IssuerSigningKey = builder.Configuration.GetSection("TokenSettings").GetValue<string>("Key") ?? "";
+if (IssuerSigningKey == "")
+{
+    return; //Exit app if IssuerSigningKey is not found
+}
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration.GetSection("TokenSettings").GetValue<string>("Issuer"),
+        ValidateIssuer = true,
+        ValidAudience = builder.Configuration.GetSection("TokenSettings").GetValue<string>("Audience"),
+        ValidateAudience = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(IssuerSigningKey)),
+        ValidateIssuerSigningKey = true,
+        ValidateLifetime = true,
+    };
+});
+
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-
+builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
-//builder.Services.AddScoped<SecurityServiceClient>();
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
@@ -35,6 +69,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthorization();
 
 app.UseStaticFiles();
 
