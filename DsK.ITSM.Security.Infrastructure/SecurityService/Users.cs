@@ -160,17 +160,21 @@ public partial class SecurityService
 
         return result;
     }
-    private async Task<User> GetUserByUsernameAsync(string username)
+    public async Task<User> GetUserByUsernameAsync(string username)
     {
         return await db.Users.Where(u => u.Username == username).FirstOrDefaultAsync();
     }
-    private async Task<User> GetUserByMappedUsernameAsync(string username, int AuthenticationProviderId)
+    public async Task<UserDto> GetUserByMappedUsernameAsync(string username, int AuthenticationProviderId)
     {
         var user = await (from u in db.Users
                           join uap in db.UserAuthenticationProviders on u.Id equals uap.UserId
                           where uap.Username == username && uap.AuthenticationProviderId == AuthenticationProviderId
                           select u).FirstOrDefaultAsync();
-        return user;
+
+        var userDto = new UserDto();
+        Mapper.Map(user, userDto);
+
+        return userDto;
     }
 }
 

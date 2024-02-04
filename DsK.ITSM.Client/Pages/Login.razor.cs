@@ -1,10 +1,13 @@
-﻿using DsK.ITSM.Security.Shared;
+﻿using Blazored.LocalStorage;
+using DsK.ITSM.Security.Shared;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
 namespace DsK.ITSM.Client.Pages;
 public partial class Login
 {
-    private UserLoginDto userLoginModel = new UserLoginDto() { AuthenticationProviderId = 1};
+    private UserLoginDto userLoginModel = new UserLoginDto() { AuthenticationProviderId = 1 };
     private bool _LoginButtonDisabled;
     private bool _passwordVisibility;
     private InputType _passwordInput = InputType.Password;

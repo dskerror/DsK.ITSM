@@ -14,32 +14,32 @@ namespace DsK.ITSM.Security.Infrastructure
 {
     public partial class SecurityService
     {
-        public async Task<APIResult<TokenModel>> UserLogin(UserLoginDto model)
-        {
-            APIResult<TokenModel> result = new APIResult<TokenModel>();
-            var user = await AuthenticateUser(model);
+        //public async Task<APIResult<TokenModel>> UserLogin(UserLoginDto model)
+        //{
+        //    APIResult<TokenModel> result = new APIResult<TokenModel>();
+        //    var user = await AuthenticateUser(model);
 
-            if (user == null)
-            {
-                result.HasError = true;
-                return result;
-            }
+        //    if (user == null)
+        //    {
+        //        result.HasError = true;
+        //        return result;
+        //    }
 
-            var token = await GenerateAuthenticationToken(user);
+        //    var token = await GenerateAuthenticationToken(user);
 
-            db.UserTokens.Add(new UserToken()
-            {
-                UserId = user.Id,
-                RefreshToken = token.RefreshToken,
-                TokenRefreshedDateTime = DateTime.Now,
-                TokenCreatedDateTime = DateTime.Now
-            });
+        //    db.UserTokens.Add(new UserToken()
+        //    {
+        //        UserId = user.Id,
+        //        RefreshToken = token.RefreshToken,
+        //        TokenRefreshedDateTime = DateTime.Now,
+        //        TokenCreatedDateTime = DateTime.Now
+        //    });
 
-            await db.SaveChangesAsync();
+        //    await db.SaveChangesAsync();
 
-            result.Result = token;
-            return result;
-        }
+        //    result.Result = token;
+        //    return result;
+        //}
         public async Task<APIResult<UserTokenDto>> RefreshToken(TokenModel model)
         {
             APIResult<UserTokenDto> result = new APIResult<UserTokenDto>();
@@ -106,8 +106,7 @@ namespace DsK.ITSM.Security.Infrastructure
             result.Message = "Token Refreshed";
             return result;
         }
-
-        private ClaimsPrincipal ValidateToken(string token)
+        public ClaimsPrincipal ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -138,7 +137,7 @@ namespace DsK.ITSM.Security.Infrastructure
                 return null;
             }
         }
-        private string GetUsernameFromClaimsPrincipal(ClaimsPrincipal claimsPrincipal)
+        public string GetUsernameFromClaimsPrincipal(ClaimsPrincipal claimsPrincipal)
         {
             if (claimsPrincipal == null)
                 return null;
@@ -150,16 +149,16 @@ namespace DsK.ITSM.Security.Infrastructure
 
             return username;
         }
-        private async Task<TokenModel> GenerateAuthenticationToken(User user)
+        public async Task<TokenModel> GenerateAuthenticationToken(UserDto userDto)
         {
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.Key ?? ""));
             var credentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
-            var userPermissions = await GetUserPermissionsCombined(user.Id);
+            var userPermissions = await GetUserPermissionsCombined(userDto.Id);
             var userClaims = new List<Claim>();
-            userClaims.Add(new Claim(ClaimTypes.Email, user.Email ?? ""));
-            userClaims.Add(new Claim("UserId", user.Id.ToString()));
-            userClaims.Add(new Claim("UserName", user.Username ?? ""));
+            userClaims.Add(new Claim(ClaimTypes.Email, userDto.Email ?? ""));
+            userClaims.Add(new Claim("UserId", userDto.Id.ToString()));
+            userClaims.Add(new Claim("UserName", userDto.Username ?? ""));
 
             foreach (var permission in userPermissions)
             {
@@ -188,58 +187,52 @@ namespace DsK.ITSM.Security.Infrastructure
                 return Convert.ToBase64String(key);
             }
         }
-        private async Task<User> AuthenticateUser(UserLoginDto model)
+        public async Task<bool> AuthenticateUser(string username, string password, int authenticationProviderId)
         {
-            var user = await GetUserByMappedUsernameAsync(model.Username, model.AuthenticationProviderId);
-
             bool IsUserAuthenticated = false;
+            var user = await GetUserByMappedUsernameAsync(username, authenticationProviderId);
+            var authenticationProvider = await AuthenticationProviderGet(authenticationProviderId);
 
-            var authenticationProvider = await AuthenticationProviderGet(model.AuthenticationProviderId);
-
-            switch (authenticationProvider.AuthenticationProviderType)
+            if (authenticationProvider.AuthenticationProviderType == "Active Directory")
             {
-                case "Active Directory":
-                    IsUserAuthenticated = AuthenticateUserWithDomain(model.Username, model.Password, authenticationProvider);
-                    if (IsUserAuthenticated)
-                        user = await CreateADUserIfNotExists(model, user, authenticationProvider);
-                    break;
-                default: //Local
-                    IsUserAuthenticated = await AuthenticateUserWithLocalPassword(model.Username, model.Password);
-                    break;
+                IsUserAuthenticated = AuthenticateUserWithDomain(username, password, authenticationProvider);
+                if (IsUserAuthenticated) //Create AD user the first time login in.
+                    user = await CreateADUserIfNotExists(username, authenticationProviderId, user, authenticationProvider);
             }
-            if (IsUserAuthenticated)
-                return user;
-            else
-                return null;
-        }
+            else            
+                IsUserAuthenticated = await AuthenticateUserWithLocalPassword(username, password);            
 
-        private async Task<User> CreateADUserIfNotExists(UserLoginDto model, User? user, AuthenticationProvider authenticationProvider)
+            if (IsUserAuthenticated)
+                return true;
+            else
+                return false;
+        }
+        public async Task<User> CreateADUserIfNotExists(string username, int authenticationProviderId, User? user, AuthenticationProvider authenticationProvider)
         {
             if (user == null)
             {
                 UserCreateDto userCreateDto = new UserCreateDto()
                 {
-                    Username = model.Username,
-                    Email = GetADUserEmail(model.Username, authenticationProvider),
-                    Name = GetADUserDisplayName(model.Username, authenticationProvider)
+                    Username = username,
+                    Email = GetADUserEmail(username, authenticationProvider),
+                    Name = GetADUserDisplayName(username, authenticationProvider)
                 };
 
                 var result = await UserCreate(userCreateDto);
 
                 UserAuthenticationProviderCreateDto userAuthenticationProviderCreateDto = new UserAuthenticationProviderCreateDto()
                 {
-                    Username = model.Username,
-                    AuthenticationProviderId = model.AuthenticationProviderId,
+                    Username = username,
+                    AuthenticationProviderId = authenticationProviderId,
                     UserId = result.Result.Id
                 };
 
-                UserAuthenticationProviderCreate(userAuthenticationProviderCreateDto);
-                user = await GetUserByMappedUsernameAsync(model.Username, model.AuthenticationProviderId);
+                await UserAuthenticationProviderCreate(userAuthenticationProviderCreateDto);
+                user = await GetUserByMappedUsernameAsync(username, authenticationProviderId);
             }
             return user;
         }
-
-        private async Task<bool> AuthenticateUserWithLocalPassword(string username, string password)
+        public async Task<bool> AuthenticateUserWithLocalPassword(string username, string password)
         {
             try
             {
@@ -263,7 +256,7 @@ namespace DsK.ITSM.Security.Infrastructure
         }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-        private bool AuthenticateUserWithDomain(string username, string password, AuthenticationProvider AuthenticationProvider)
+        public bool AuthenticateUserWithDomain(string username, string password, AuthenticationProvider AuthenticationProvider)
         {
             //todo : encrypt Authentication Provider password 
             using (PrincipalContext pc = new PrincipalContext(ContextType.Domain, AuthenticationProvider.Domain, AuthenticationProvider.Username, AuthenticationProvider.Password))
@@ -275,8 +268,8 @@ namespace DsK.ITSM.Security.Infrastructure
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
-        private string GetADUserEmail(string username, AuthenticationProvider AuthenticationProvider)
-        {   
+        public string GetADUserEmail(string username, AuthenticationProvider AuthenticationProvider)
+        {
             string email = "";
             using (PrincipalContext pc = new PrincipalContext(ContextType.Domain, AuthenticationProvider.Domain, AuthenticationProvider.Username, AuthenticationProvider.Password))
             {
@@ -288,7 +281,7 @@ namespace DsK.ITSM.Security.Infrastructure
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         public string GetADUserDisplayName(string username, AuthenticationProvider AuthenticationProvider)
-        {   
+        {
             string realname = "";
             using (PrincipalContext pc = new PrincipalContext(ContextType.Domain, AuthenticationProvider.Domain, AuthenticationProvider.Username, AuthenticationProvider.Password))
             {
