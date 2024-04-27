@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using DsK.ITSM.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
@@ -9,3 +10,14 @@
 @using DsK.ITSM
 @using DsK.ITSM.Client
 @using DsK.ITSM.Components
+
+
+@using Blazored.LocalStorage;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Authorization;
+@inject NavigationManager _navigationManager
+@inject HttpClient Http;
+@inject ILocalStorageService _localStorageService;
+@inject AuthenticationStateProvider _authenticationStateProvider;
+@inject SecurityServiceClient securityService;
+@inject IJSRuntime JSRuntime;

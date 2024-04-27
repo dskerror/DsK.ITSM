@@ -3,9 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DsK.ITSM", "DsK.ITSM\DsK.ITSM\DsK.ITSM.csproj", "{BDBC5D6D-EA12-4076-A133-AF25280F2D0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM", "DsK.ITSM\DsK.ITSM\DsK.ITSM.csproj", "{BDBC5D6D-EA12-4076-A133-AF25280F2D0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DsK.ITSM.Client", "DsK.ITSM\DsK.ITSM.Client\DsK.ITSM.Client.csproj", "{130C27CD-575A-4E9B-9E6F-2546CDB1EFB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM.Client", "DsK.ITSM\DsK.ITSM.Client\DsK.ITSM.Client.csproj", "{130C27CD-575A-4E9B-9E6F-2546CDB1EFB7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM.EntityFramework", "DsK.ITSM.EntityFramework\DsK.ITSM.EntityFramework.csproj", "{2A0B6425-6CD6-4C38-A104-7A4684473EE3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM.Infrastructure", "DsK.ITSM.Infrastructure\DsK.ITSM.Infrastructure.csproj", "{C90CFC08-D6AA-46EA-9F4B-B4D27C88E82D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM.API", "DsK.ITSM.API\DsK.ITSM.API.csproj", "{8293E0AF-9E80-492A-9551-D8395EEC68E7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DsK.ITSM.Shared", "DsK.ITSM.Shared\DsK.ITSM.Shared.csproj", "{AD174D87-CEA5-4A2D-A017-200EBCB7553F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,22 @@ Global
 		{130C27CD-575A-4E9B-9E6F-2546CDB1EFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{130C27CD-575A-4E9B-9E6F-2546CDB1EFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{130C27CD-575A-4E9B-9E6F-2546CDB1EFB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A0B6425-6CD6-4C38-A104-7A4684473EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A0B6425-6CD6-4C38-A104-7A4684473EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A0B6425-6CD6-4C38-A104-7A4684473EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A0B6425-6CD6-4C38-A104-7A4684473EE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C90CFC08-D6AA-46EA-9F4B-B4D27C88E82D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C90CFC08-D6AA-46EA-9F4B-B4D27C88E82D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C90CFC08-D6AA-46EA-9F4B-B4D27C88E82D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C90CFC08-D6AA-46EA-9F4B-B4D27C88E82D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8293E0AF-9E80-492A-9551-D8395EEC68E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8293E0AF-9E80-492A-9551-D8395EEC68E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8293E0AF-9E80-492A-9551-D8395EEC68E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8293E0AF-9E80-492A-9551-D8395EEC68E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD174D87-CEA5-4A2D-A017-200EBCB7553F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD174D87-CEA5-4A2D-A017-200EBCB7553F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD174D87-CEA5-4A2D-A017-200EBCB7553F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD174D87-CEA5-4A2D-A017-200EBCB7553F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
