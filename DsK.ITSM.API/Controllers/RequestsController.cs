@@ -3,6 +3,8 @@ using DsK.ITSM.Shared.DTOs.Requests;
 using DsK.ITSM.EntityFramework.Models;
 using DsK.ITSM.Infrastructure.APIServices;
 using Microsoft.AspNetCore.Mvc;
+using DsK.ITSM.Shared.Token;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DsK.ITSM.API.Controllers;
 
@@ -18,12 +20,14 @@ public class RequestsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = $"{Access.Admin}, {Access.Request.Create}")]
     public async Task<IActionResult> Create(RequestCreateDto model)
     {
         return Ok(await _service.Create(model));
     }
 
     [HttpGet]
+    [Authorize(Roles = $"{Access.Admin}, {Access.Request.View}")]
     public async Task<IActionResult> Get([FromQuery] PagingRequest pagingRequest)
     {
         var result = await _service.Get(pagingRequest, null);
@@ -31,6 +35,7 @@ public class RequestsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = $"{Access.Admin}, {Access.Request.View}")]
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
@@ -38,6 +43,7 @@ public class RequestsController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Roles = $"{Access.Admin}, {Access.Request.Edit}")]
     public async Task<IActionResult> Update(RequestDto model)
     {
         var result = await _service.Update(model);
@@ -45,6 +51,7 @@ public class RequestsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = $"{Access.Admin}, {Access.Request.Delete}")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);

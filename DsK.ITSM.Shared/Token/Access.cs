@@ -9,9 +9,12 @@ public static class Access
 
     [DisplayName("Request")]
     [Description("Request Permissions")]
-    public static class RequestPage
+    public static class Request
     {
-        public const string RequestFunction = "DsK.ITSM.Request";
+        public const string View = "Request.View";
+        public const string Create = "Request.Create";
+        public const string Edit = "Request.Edit";
+        public const string Delete = "Request.Delete";
     }
 
     /// <summary>
