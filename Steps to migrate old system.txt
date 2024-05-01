@@ -1,0 +1,177 @@
+﻿--backup old database
+exec sp_rename 'Permissions', 'OldPermissions'
+exec sp_rename 'Users', 'OldUsers'
+exec sp_rename 'UserPermissions', 'OldUserPermissions'
+alter table OldUserPermissions drop constraint FK_UserPermissions_Permissions
+alter table OldUserPermissions drop constraint FK_UserPermissions_Users
+alter table OldUsers drop constraint PK_Users
+ALTER TABLE OldUsers DROP PRIMARY KEY
+update [OLDUsers] set [Email] = 'claimsrep3x@optimapr.com' where id = 58
+--crear role de tech y user en DsK.AuthServer
+--todo: nueva tabla de logs, mover logging a DsK.AuthServer
+DROP TABLE LOG 
+DROP TABLE OLDUserPermissions
+DROP TABLE OLDPermissions
+DROP TABLE OLDUsers
+alter table RequestAssignedHistory drop constraint FK_RequestAssignedHistory_Requests
+alter table RequestMessageHistory drop constraint FK_RequestMessageHistory_Requests
+alter table RequestStatusHistory drop constraint FK_RequestStatusHistory_Requests
+alter table [Requests] add RequestedByUserId int
+
+
+--no se puede borrar la tabla de users todavia
+UPDATE [Requests]
+SET RequestedByUserId = b.Id
+FROM  [Requests] a
+LEFT JOIN Users b on a.RequestedByUsername = b.Username
+
+remove RequestedByUserId Allow Nulls
+
+ALTER TABLE Requests DROP COLUMN RequestedByUsername;
+ALTER TABLE Requests DROP COLUMN RequestedByEmail;
+ALTER TABLE Requests DROP COLUMN RequestedByDisplayName;
+
+--
+alter table [RequestAssignedHistory] add [AssignedToUserId] int
+
+UPDATE [RequestAssignedHistory]
+SET [AssignedToUserId] = b.Id
+FROM  [RequestAssignedHistory] a
+LEFT JOIN Users b on a.[AssignedTo] = b.Username
+
+ALTER TABLE RequestAssignedHistory DROP COLUMN AssignedTo;
+
+
+--
+
+alter table [RequestMessageHistory] add UserId int
+
+UPDATE [RequestMessageHistory]
+SET UserId = b.Id
+FROM  [RequestMessageHistory] a
+LEFT JOIN Users b on a.[Username] = b.Username
+
+ALTER TABLE [RequestMessageHistory] DROP COLUMN [Username];
+ALTER TABLE [RequestMessageHistory] DROP COLUMN DisplayName;
+
+--
+
+alter table [RequestStatusHistory] add ChangedByUsernameUserId int
+
+UPDATE [RequestStatusHistory]
+SET ChangedByUsernameUserId = b.Id
+FROM  [RequestStatusHistory] a
+LEFT JOIN Users b on a.[ChangedByUsername] = b.Username
+
+ALTER TABLE [RequestStatusHistory] DROP COLUMN [ChangedByUsername];
+ALTER TABLE [RequestStatusHistory] DROP COLUMN [ChangedByDisplayName];
+
+--
+INSERT INTO [AuthenticationProviders] 
+  ([AuthenticationProviderName],[AuthenticationProviderType],[Domain],[Username],[Password])
+  VALUES ('AD','Active Directory','domainname','username','password')
+
+INSERT INTO [UserAuthenticationProviders]
+  ([UserId],[AuthenticationProviderId],[Username] )
+  SELECT [Id],2,[Username]  FROM [Users]
+--
+
+crear relaciones entre tablas request
+
+crear relaciones entre request con users (FK_RequestAssignedHistory_Users, FK_RequestMessageHistory_Users)
+
+--
+xxx
+
+alter table [Requests] add ITSystemId int
+
+UPDATE [Requests]
+SET ITSystemId = b.Id
+FROM  [Requests] a
+LEFT JOIN ITSystems b on a.System = b.SystemName
+
+ALTER TABLE [Requests] DROP COLUMN [System];
+
+Crear relaciones (FK_Requests_ITSystems)
+
+--
+
+alter table [SOP1Systems] add ITSystemId int
+
+UPDATE [SOP1Systems]
+SET ITSystemId = b.Id
+FROM  [SOP1Systems] a
+LEFT JOIN ITSystems b on a.[System] = b.SystemName
+
+ALTER TABLE [SOP1Systems] DROP COLUMN [System];
+
+crear relacion (FK_SOP1Systems_ITSystems)
+
+--
+
+CREATE TABLE Priority (
+	Id int IDENTITY(1,1) PRIMARY KEY,
+	PriorityName varchar(10) NOT NULL
+);
+
+insert into Priority (PriorityName) VALUES ('Low')
+insert into Priority (PriorityName) VALUES ('Medium')
+insert into Priority (PriorityName) VALUES ('High')
+
+alter table [Requests] add PriorityId int
+
+UPDATE [Requests]
+SET PriorityId = b.Id
+FROM  [Requests] a
+LEFT JOIN Priority b on a.Priority = b.PriorityName
+
+ALTER TABLE [Requests] DROP COLUMN [Priority];
+
+crear relacion (FK_Requests_Priority)
+
+--
+
+
+CREATE TABLE Categories (
+	Id int IDENTITY(1,1) PRIMARY KEY,
+	CategoryName nvarchar(20) NOT NULL
+);
+
+insert into Categories (CategoryName) VALUES ('Incident')
+insert into Categories (CategoryName) VALUES ('Change Request')
+insert into Categories (CategoryName) VALUES ('Service Request')
+
+alter table [Requests] add CategoryId int
+
+UPDATE [Requests]
+SET CategoryId = b.Id
+FROM  [Requests] a
+LEFT JOIN Categories b on a.Category = b.CategoryName
+
+ALTER TABLE [Requests] DROP COLUMN Category;
+
+crear relacion (FK_Requests_Category)
+--
+
+
+CREATE TABLE RequestType (
+	Id int IDENTITY(1,1) PRIMARY KEY,
+	RequestTypeName nvarchar(20) NOT NULL
+);
+
+insert into RequestType (RequestTypeName) VALUES ('Request')
+insert into RequestType (RequestTypeName) VALUES ('SOP1')
+
+alter table [Requests] add RequestTypeId int
+
+UPDATE [Requests]
+SET RequestTypeId = b.Id
+FROM  [Requests] a
+LEFT JOIN RequestType b on a.RequestType = b.RequestTypeName
+
+ALTER TABLE [Requests] DROP COLUMN RequestType;
+
+crear relacion (FK_Requests_Category)
+
+
+
