@@ -5,6 +5,7 @@ using DsK.ITSM.Infrastructure.APIServices;
 using Microsoft.AspNetCore.Mvc;
 using DsK.ITSM.Shared.Token;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace DsK.ITSM.API.Controllers;
 
@@ -30,6 +31,15 @@ public class RequestsController : ControllerBase
     [Authorize(Roles = $"{Access.Admin}, {Access.Request.View}")]
     public async Task<IActionResult> Get([FromQuery] PagingRequest pagingRequest)
     {
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        if (identity != null)
+        {
+            IEnumerable<Claim> claims = identity.Claims;
+            // or
+            //identity.FindFirst("ClaimName").Value;
+
+        }
+
         var result = await _service.Get(pagingRequest, null);
         return Ok(result);
     }

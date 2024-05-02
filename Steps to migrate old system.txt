@@ -7,12 +7,59 @@ alter table OldUserPermissions drop constraint FK_UserPermissions_Users
 alter table OldUsers drop constraint PK_Users
 ALTER TABLE OldUsers DROP PRIMARY KEY
 update [OLDUsers] set [Email] = 'claimsrep3x@optimapr.com' where id = 58
---crear role de tech y user en DsK.AuthServer
+
+--create users into dskautheserver
+  INSERT INTO [DsKAuthServer2].[dbo].[Users]
+([Email],[Name],[EmailConfirmed],[AccessFailedCount],[LockoutEnd],[LockoutEnabled],[HashedPassword],[Salt],[AccountCreatedDateTime],[LastPasswordChangeDateTime],[PasswordChangeDateTime],[PasswordChangeGuid],[IsEnabled])
+	  SELECT [Email], [Name], 1, 0, NULL, 0, '3E8EB9B40829A1B73B1E1E65EAE1F9FE317B27817E0B077E3AA5D14BB383DF3B642AE73C60E79A1F5D256333F319F36813A4BF446F36BAA2E799E9420B8CEAB1',
+	  'C6FA6A7C8C20BB61FDED712582DB7F9370263A2C2214651008FDAE3C168A3D0C471BB8D5FD5FD43F7D6255FD6C3BE35BEE21D945B500B992D6AB6CB6031443DE',
+	  '2024-04-03 16:33:14.120','2024-04-03 16:33:14.120',NULL, NULL, 1
+  FROM [DsKITSM].[dbo].[OldUsers]
+
+--crear role de tech y user en DsK.AuthServer  
+    insert into [DsKAuthServer2].[dbo].[ApplicationRoles]
+  ([ApplicationId],[RoleName],[RoleDescription],[IsEnabled])
+  VALUES (2, 'Tech', 'Tech Rol',1)
+
+  insert into [DsKAuthServer2].[dbo].[ApplicationRoles]
+  ([ApplicationId],[RoleName],[RoleDescription],[IsEnabled])
+  VALUES (2, 'User', 'User Rol',1)
+  
+ --insertar en application users
+  insert into [DsKAuthServer2].[dbo].[ApplicationUsers]
+  ([ApplicationId],[UserId],[LockoutEnd],[LockoutEnabled],[AccessFailedCount],[TwoFactorEnabled],[IsEnabled])
+  SELECT 2, id, NULL, 0, 0, 0, 1  
+  FROM [DsKAuthServer2].[dbo].[Users]
+  where id >= 106
+
+
+--insertar rol de user a usuarios
+  insert into [DsKAuthServer2].[dbo].[UserRoles]
+  ([UserId],[RoleId])
+  select id, 6 from 
+  [DsKAuthServer2].[dbo].[Users]
+  where id >= 106
+  
+ --crear el authentication provider AD en dsk.autheserver
+ 
+ 
+ --insertar user mappings para users con auth prov de AD
+   insert into [DsKAuthServer2].[dbo].[ApplicationAuthenticationProviderUserMappings]
+  ([ApplicationAuthenticationProviderId],[ApplicationUserId],[Username],[IsEnabled])
+  select 4, c.id, b.Username, 1 from [DsKAuthServer2].[dbo].[Users] a
+  LEFT JOIN [DsKITSM].[dbo].[OldUsers] b ON a.Email = b.Email
+  LEFT JOIN [DsKAuthServer2].[dbo].[ApplicationUsers] c on a.id = c.UserId and c.ApplicationId = 2
+  WHERE a.id >= 106
+  order by a.id
+ 
+ 
+ 
+ 
+ -------------------
+ 
+
 --todo: nueva tabla de logs, mover logging a DsK.AuthServer
-DROP TABLE LOG 
-DROP TABLE OLDUserPermissions
-DROP TABLE OLDPermissions
-DROP TABLE OLDUsers
+
 alter table RequestAssignedHistory drop constraint FK_RequestAssignedHistory_Requests
 alter table RequestMessageHistory drop constraint FK_RequestMessageHistory_Requests
 alter table RequestStatusHistory drop constraint FK_RequestStatusHistory_Requests
@@ -175,3 +222,9 @@ crear relacion (FK_Requests_Category)
 
 
 
+
+
+DROP TABLE LOG 
+DROP TABLE OLDUserPermissions
+DROP TABLE OLDPermissions
+DROP TABLE OLDUsers
