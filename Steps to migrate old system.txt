@@ -11,9 +11,6 @@ alter table OldUserPermissions drop constraint FK_UserPermissions_Users
 GO
 alter table OldUsers drop constraint PK_Users
 GO
-ALTER TABLE OldUsers DROP PRIMARY KEY
-GO
-
 --FIXES
 update [OLDUsers] set [Email] = 'claimsrep3x@optimapr.com' where id = 58
 GO
@@ -22,62 +19,67 @@ GO
  
 
 --create users into dskautheserver
-  INSERT INTO [DsKAuthServer2].[dbo].[Users]
+INSERT INTO [DsKAuthServer2].[dbo].[Users]
 ([Email],[Name],[EmailConfirmed],[AccessFailedCount],[LockoutEnd],[LockoutEnabled],[HashedPassword],[Salt],[AccountCreatedDateTime],[LastPasswordChangeDateTime],[PasswordChangeDateTime],[PasswordChangeGuid],[IsEnabled])
-	  SELECT [Email], [Name], 1, 0, NULL, 0, '3E8EB9B40829A1B73B1E1E65EAE1F9FE317B27817E0B077E3AA5D14BB383DF3B642AE73C60E79A1F5D256333F319F36813A4BF446F36BAA2E799E9420B8CEAB1',
-	  'C6FA6A7C8C20BB61FDED712582DB7F9370263A2C2214651008FDAE3C168A3D0C471BB8D5FD5FD43F7D6255FD6C3BE35BEE21D945B500B992D6AB6CB6031443DE',
-	  '2024-04-03 16:33:14.120','2024-04-03 16:33:14.120',NULL, NULL, 1
-  FROM [DsKITSM].[dbo].[OldUsers]
+SELECT [Email], [Name], 1, 0, NULL, 0, '3E8EB9B40829A1B73B1E1E65EAE1F9FE317B27817E0B077E3AA5D14BB383DF3B642AE73C60E79A1F5D256333F319F36813A4BF446F36BAA2E799E9420B8CEAB1',
+'C6FA6A7C8C20BB61FDED712582DB7F9370263A2C2214651008FDAE3C168A3D0C471BB8D5FD5FD43F7D6255FD6C3BE35BEE21D945B500B992D6AB6CB6031443DE',
+'2024-04-03 16:33:14.120','2024-04-03 16:33:14.120',NULL, NULL, 1
+FROM [DsKITSM].[dbo].[OldUsers]
 GO 
 
+--TODO : Revisar id
 --crear role de tech y user en DsK.AuthServer  
-    insert into [DsKAuthServer2].[dbo].[ApplicationRoles]
-  ([ApplicationId],[RoleName],[RoleDescription],[IsEnabled])
-  VALUES (2, 'Tech', 'Tech Rol',1)
+insert into [DsKAuthServer2].[dbo].[ApplicationRoles]
+([ApplicationId],[RoleName],[RoleDescription],[IsEnabled])
+VALUES (2, 'Tech', 'Tech Rol',1)
 GO
-  insert into [DsKAuthServer2].[dbo].[ApplicationRoles]
-  ([ApplicationId],[RoleName],[RoleDescription],[IsEnabled])
-  VALUES (2, 'User', 'User Rol',1)
+insert into [DsKAuthServer2].[dbo].[ApplicationRoles]
+([ApplicationId],[RoleName],[RoleDescription],[IsEnabled])
+VALUES (2, 'User', 'User Rol',1)
 GO
   
+  --TODO : Revisar id
  --insertar en application users
-  insert into [DsKAuthServer2].[dbo].[ApplicationUsers]
-  ([ApplicationId],[UserId],[LockoutEnd],[LockoutEnabled],[AccessFailedCount],[TwoFactorEnabled],[IsEnabled])
-  SELECT 2, id, NULL, 0, 0, 0, 1  
-  FROM [DsKAuthServer2].[dbo].[Users]
-  where id >= 106
+insert into [DsKAuthServer2].[dbo].[ApplicationUsers]
+([ApplicationId],[UserId],[LockoutEnd],[LockoutEnabled],[AccessFailedCount],[TwoFactorEnabled],[IsEnabled])
+SELECT 2, id, NULL, 0, 0, 0, 1  
+FROM [DsKAuthServer2].[dbo].[Users]
+where id >= 3
 GO
 
+--TODO : Revisar id
 --insertar rol de user a usuarios
-  insert into [DsKAuthServer2].[dbo].[UserRoles]
-  ([UserId],[RoleId])
-  select id, 6 from 
-  [DsKAuthServer2].[dbo].[Users]
-  where id >= 106
- GO
+insert into [DsKAuthServer2].[dbo].[UserRoles]
+([UserId],[RoleId])
+select id, 5 from 
+[DsKAuthServer2].[dbo].[Users]
+where id >= 3
+GO
   
- --TODO : crear el authentication provider AD en dsk.autheserver
+ --TODO : crear el authentication provider AD en DsK.ITSM, enabled it, prender auto register
  
  
+ --TODO : Revisar id
  --insertar user mappings para users con auth prov de AD
-	insert into [DsKAuthServer2].[dbo].[ApplicationAuthenticationProviderUserMappings]
-	([ApplicationAuthenticationProviderId],[ApplicationUserId],[Username],[IsEnabled])
-	select 4, c.id, b.Username, 1 from [DsKAuthServer2].[dbo].[Users] a
-	LEFT JOIN [DsKITSM].[dbo].[OldUsers] b ON a.Email = b.Email
-	LEFT JOIN [DsKAuthServer2].[dbo].[ApplicationUsers] c on a.id = c.UserId and c.ApplicationId = 2
-	WHERE a.id >= 106
-	order by a.id
-	GO
+insert into [DsKAuthServer2].[dbo].[ApplicationAuthenticationProviderUserMappings]
+([ApplicationAuthenticationProviderId],[ApplicationUserId],[Username],[IsEnabled])
+select 3, c.id, b.Username, 1 from [DsKAuthServer2].[dbo].[Users] a
+LEFT JOIN [DsKITSM].[dbo].[OldUsers] b ON a.Email = b.Email
+LEFT JOIN [DsKAuthServer2].[dbo].[ApplicationUsers] c on a.id = c.UserId and c.ApplicationId = 2
+WHERE a.id >= 3
+order by a.id
+GO
  
  
  --create new users table 
-	SELECT distinct
-	b.Id, a.[RequestedByEmail] as Email, a.[RequestedByDisplayName] as Name
-	INTO [DsKITSM].[dbo].[Users]
-	FROM [DsKITSM].[dbo].[Requests] a
-	LEFT JOIN [DsKAuthServer2].[dbo].[Users] b on a.RequestedByEmail = b.Email
-	LEFT JOIN [DsKAuthServer2].[dbo].[ApplicationUsers] c on b.Id = c.UserId and c.ApplicationId = 2
-	order by b.id
+SELECT distinct
+b.Id, a.[RequestedByEmail] as Email, a.[RequestedByDisplayName] as Name
+INTO [DsKITSM].[dbo].[Users]
+FROM [DsKITSM].[dbo].[Requests] a
+LEFT JOIN [DsKAuthServer2].[dbo].[Users] b on a.RequestedByEmail = b.Email
+LEFT JOIN [DsKAuthServer2].[dbo].[ApplicationUsers] c on b.Id = c.UserId and c.ApplicationId = 2
+order by b.id
+GO
 
 
 alter table RequestAssignedHistory drop constraint FK_RequestAssignedHistory_Requests
@@ -140,7 +142,7 @@ alter table [RequestMessageHistory] add UserId int
 GO
 
 UPDATE [RequestMessageHistory]
-SET UserId = b.Id
+SET UserId = c.Id
 FROM  [RequestMessageHistory] a
 LEFT JOIN OldUsers b on a.[Username] = b.Username
 LEFT JOIN Users c on b.Email = c.Email
@@ -196,6 +198,154 @@ LEFT JOIN Categories b on a.Category = b.CategoryName
 GO
 
 DELETE FROM Requests WHERE [RequestType] = 'SOP1'
+GO
+
+
+DELETE FROM RequestAssignedHistory WHERE Id IN
+(
+SELECT a.id FROM RequestAssignedHistory a
+  LEFT JOIN Requests b on a.RequestId = b.Id
+  where b.id is null
+)
+
+
+--SET USERS PRIMARY KEY
+BEGIN TRANSACTION
+GO
+CREATE TABLE dbo.Tmp_Users
+	(
+	Id int NOT NULL IDENTITY (1, 1),
+	Email nvarchar(100) NOT NULL,
+	Name nvarchar(100) NOT NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_Users SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_Users ON
+GO
+IF EXISTS(SELECT * FROM dbo.Users)
+	 EXEC('INSERT INTO dbo.Tmp_Users (Id, Email, Name)
+		SELECT Id, Email, Name FROM dbo.Users WITH (HOLDLOCK TABLOCKX)')
+GO
+SET IDENTITY_INSERT dbo.Tmp_Users OFF
+GO
+DROP TABLE dbo.Users
+GO
+EXECUTE sp_rename N'dbo.Tmp_Users', N'Users', 'OBJECT' 
+GO
+ALTER TABLE dbo.Users ADD CONSTRAINT
+	PK_Users PRIMARY KEY CLUSTERED 
+	(
+	Id
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+COMMIT
+
+
+
+
+ALTER TABLE dbo.RequestAssignedHistory ADD CONSTRAINT
+	FK_RequestAssignedHistory_Users FOREIGN KEY
+	(
+	UserId
+	) REFERENCES dbo.Users
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.RequestAssignedHistory ADD CONSTRAINT
+	FK_RequestAssignedHistory_Requests FOREIGN KEY
+	(
+	RequestId
+	) REFERENCES dbo.Requests
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+
+
+
+
+
+DELETE FROM RequestMessageHistory WHERE ID IN
+(
+SELECT a.id
+  FROM RequestMessageHistory a
+  left join Requests b on a.RequestId = b.id
+  where b.id is null
+  )
+  
+  
+ALTER TABLE dbo.RequestMessageHistory ADD CONSTRAINT
+	FK_RequestMessageHistory_Requests FOREIGN KEY
+	(
+	RequestId
+	) REFERENCES dbo.Requests
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.RequestMessageHistory ADD CONSTRAINT
+	FK_RequestMessageHistory_Users FOREIGN KEY
+	(
+	UserId
+	) REFERENCES dbo.Users
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+
+
+
+
+DELETE FROM RequestStatusHistory WHERE ID IN (
+select a.id from RequestStatusHistory a
+LEFT JOIN Requests b on a.RequestId = b.id
+where b.id is NULL
+)
+
+
+ALTER TABLE dbo.RequestStatusHistory ADD CONSTRAINT
+	FK_RequestStatusHistory_Requests FOREIGN KEY
+	(
+	RequestId
+	) REFERENCES dbo.Requests
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.RequestStatusHistory ADD CONSTRAINT
+	FK_RequestStatusHistory_Status FOREIGN KEY
+	(
+	Id
+	) REFERENCES dbo.Status
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.RequestStatusHistory ADD CONSTRAINT
+	FK_RequestStatusHistory_Users FOREIGN KEY
+	(
+	UserId
+	) REFERENCES dbo.Users
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
 GO
 
 
