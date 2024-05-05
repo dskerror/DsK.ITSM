@@ -11,11 +11,11 @@ namespace DsK.ITSM.Infrastructure.APIServices;
 public class GenericAPIService<TEntity, TDto> : IGenericAPIService<TEntity, TDto> where TEntity : class
     where TDto : class
 {
-    private readonly DsKITSMContext _context;
+    private readonly DskitsmContext _context;
     private IMapper _mapper;
     private readonly DbSet<TEntity> _dbSet;
 
-    public GenericAPIService(DsKITSMContext context, IMapper mapper)
+    public GenericAPIService(DskitsmContext context, IMapper mapper)
     {
         _context = context;
         _dbSet = context.Set<TEntity>();

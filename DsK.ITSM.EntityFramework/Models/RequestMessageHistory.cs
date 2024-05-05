@@ -9,13 +9,13 @@ public partial class RequestMessageHistory
 
     public int RequestId { get; set; }
 
-    public string Username { get; set; } = null!;
-
-    public string DisplayName { get; set; } = null!;
-
     public string Message { get; set; } = null!;
 
     public DateTime MessageDateTime { get; set; }
 
+    public int? UserId { get; set; }
+
     public virtual Request Request { get; set; } = null!;
+
+    public virtual User? User { get; set; }
 }

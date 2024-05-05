@@ -11,11 +11,13 @@ public partial class RequestStatusHistory
 
     public DateTime TransactionDateTime { get; set; }
 
-    public string Status { get; set; } = null!;
+    public int? UserId { get; set; }
 
-    public string ChangedByUsername { get; set; } = null!;
-
-    public string ChangedByDisplayName { get; set; } = null!;
+    public int? StatusId { get; set; }
 
     public virtual Request Request { get; set; } = null!;
+
+    public virtual Status? Status { get; set; }
+
+    public virtual User? User { get; set; }
 }

@@ -7,11 +7,15 @@ public partial class User
 {
     public int Id { get; set; }
 
-    public string Username { get; set; } = null!;
+    public string Email { get; set; } = null!;
 
-    public string? Name { get; set; }
+    public string Name { get; set; } = null!;
 
-    public string? Email { get; set; }
+    public virtual ICollection<RequestAssignedHistory> RequestAssignedHistories { get; set; } = new List<RequestAssignedHistory>();
 
-    public virtual ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+    public virtual ICollection<RequestMessageHistory> RequestMessageHistories { get; set; } = new List<RequestMessageHistory>();
+
+    public virtual ICollection<RequestStatusHistory> RequestStatusHistories { get; set; } = new List<RequestStatusHistory>();
+
+    public virtual ICollection<Request> Requests { get; set; } = new List<Request>();
 }

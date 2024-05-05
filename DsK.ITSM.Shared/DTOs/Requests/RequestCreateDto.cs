@@ -1,16 +1,20 @@
-﻿namespace DsK.ITSM.Shared.DTOs.Requests;
+﻿namespace DsK.ITSM.Shared.DTOs;
 
-public class RequestCreateDto
+public partial class RequestCreateDto
 {
+    public int Id { get; set; }
+
     public string Summary { get; set; } = null!;
 
     public string? Description { get; set; }
 
-    public string System { get; set; } = null!;
+    public DateTime RequestDateTime { get; set; }    
 
-    public string Priority { get; set; } = null!;
+    public int UserId { get; set; }
 
-    public string Category { get; set; } = null!;
+    public int ItsystemId { get; set; }
 
-    public string RequestType { get; set; } = null!;
+    public int PriorityId { get; set; }
+
+    public int CategoryId { get; set; }
 }

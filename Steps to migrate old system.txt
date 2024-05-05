@@ -16,9 +16,10 @@ update [OLDUsers] set [Email] = 'claimsrep3x@optimapr.com' where id = 58
 GO
 update [DsKITSM].[dbo].[Requests] set RequestedByEmail = 'maria.andino@optimapr.com' where RequestedByEmail = 'maria.andino@colonialpr.com'
 GO
- 
+
 
 --create users into dskautheserver
+/*
 INSERT INTO [DsKAuthServer2].[dbo].[Users]
 ([Email],[Name],[EmailConfirmed],[AccessFailedCount],[LockoutEnd],[LockoutEnabled],[HashedPassword],[Salt],[AccountCreatedDateTime],[LastPasswordChangeDateTime],[PasswordChangeDateTime],[PasswordChangeGuid],[IsEnabled])
 SELECT [Email], [Name], 1, 0, NULL, 0, '3E8EB9B40829A1B73B1E1E65EAE1F9FE317B27817E0B077E3AA5D14BB383DF3B642AE73C60E79A1F5D256333F319F36813A4BF446F36BAA2E799E9420B8CEAB1',
@@ -27,8 +28,11 @@ SELECT [Email], [Name], 1, 0, NULL, 0, '3E8EB9B40829A1B73B1E1E65EAE1F9FE317B2781
 FROM [DsKITSM].[dbo].[OldUsers]
 GO 
 
+
 --TODO : Revisar id
 --crear role de tech y user en DsK.AuthServer  
+
+
 insert into [DsKAuthServer2].[dbo].[ApplicationRoles]
 ([ApplicationId],[RoleName],[RoleDescription],[IsEnabled])
 VALUES (2, 'Tech', 'Tech Rol',1)
@@ -37,6 +41,7 @@ insert into [DsKAuthServer2].[dbo].[ApplicationRoles]
 ([ApplicationId],[RoleName],[RoleDescription],[IsEnabled])
 VALUES (2, 'User', 'User Rol',1)
 GO
+
   
   --TODO : Revisar id
  --insertar en application users
@@ -55,7 +60,8 @@ select id, 5 from
 [DsKAuthServer2].[dbo].[Users]
 where id >= 3
 GO
-  
+
+
  --TODO : crear el authentication provider AD en DsK.ITSM, enabled it, prender auto register
  
  
@@ -70,6 +76,7 @@ WHERE a.id >= 3
 order by a.id
 GO
  
+*/
  
  --create new users table 
 SELECT distinct
@@ -105,6 +112,18 @@ SET ITSystemId = b.Id
 FROM  [Requests] a
 LEFT JOIN ITSystems b on a.System = b.SystemName
 GO
+
+
+UPDATE [DsKITSM].[dbo].[ITSystems]
+SET SystemName = 'VPN'
+WHERE Id = 46
+GO
+
+UPDATE [DsKITSM].[dbo].[Requests]
+Set ITSystemId = 46
+where [ITSystemId] is null
+GO
+ 
 
 
 alter table [RequestStatusHistory] add UserId int
@@ -328,7 +347,7 @@ GO
 ALTER TABLE dbo.RequestStatusHistory ADD CONSTRAINT
 	FK_RequestStatusHistory_Status FOREIGN KEY
 	(
-	Id
+	StatusId
 	) REFERENCES dbo.Status
 	(
 	Id
@@ -349,6 +368,9 @@ ALTER TABLE dbo.RequestStatusHistory ADD CONSTRAINT
 GO
 
 
+
+
+
 --DROPS al final
 ALTER TABLE [Requests] DROP COLUMN RequestedByUsername
 GO
@@ -358,6 +380,9 @@ ALTER TABLE [Requests] DROP COLUMN RequestedByDisplayName
 GO
 ALTER TABLE [Requests] DROP COLUMN [System]
 GO
+ALTER TABLE [Requests] DROP COLUMN [RequestType]
+GO
+
 ALTER TABLE [RequestStatusHistory] DROP COLUMN [ChangedByUsername]
 GO
 ALTER TABLE [RequestStatusHistory] DROP COLUMN [ChangedByDisplayName]
@@ -389,15 +414,193 @@ DROP TABLE SOP1
 GO
 DROP TABLE Office365EmailGroups
 GO
-  
 
----------------------------------------------------------
+
+--NO NULLS IN Requests
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+GO
+CREATE TABLE dbo.Tmp_Requests
+	(
+	Id int NOT NULL IDENTITY (1, 1),
+	Summary nvarchar(100) NOT NULL,
+	Description nvarchar(500) NULL,
+	RequestDateTime datetime NOT NULL,
+	RequestType nvarchar(50) NOT NULL,
+	UserId int NOT NULL,
+	ITSystemId int NOT NULL,
+	PriorityId int NOT NULL,
+	CategoryId int NOT NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_Requests SET (LOCK_ESCALATION = TABLE)
+GO
+SET IDENTITY_INSERT dbo.Tmp_Requests ON
+GO
+IF EXISTS(SELECT * FROM dbo.Requests)
+	 EXEC('INSERT INTO dbo.Tmp_Requests (Id, Summary, Description, RequestDateTime, RequestType, UserId, ITSystemId, PriorityId, CategoryId)
+		SELECT Id, Summary, Description, RequestDateTime, RequestType, UserId, ITSystemId, PriorityId, CategoryId FROM dbo.Requests WITH (HOLDLOCK TABLOCKX)')
+GO
+SET IDENTITY_INSERT dbo.Tmp_Requests OFF
+GO
+ALTER TABLE dbo.RequestAssignedHistory
+	DROP CONSTRAINT FK_RequestAssignedHistory_Requests
+GO
+ALTER TABLE dbo.RequestMessageHistory
+	DROP CONSTRAINT FK_RequestMessageHistory_Requests
+GO
+ALTER TABLE dbo.RequestStatusHistory
+	DROP CONSTRAINT FK_RequestStatusHistory_Requests
+GO
+DROP TABLE dbo.Requests
+GO
+EXECUTE sp_rename N'dbo.Tmp_Requests', N'Requests', 'OBJECT' 
+GO
+ALTER TABLE dbo.Requests ADD CONSTRAINT
+	PK_Requests PRIMARY KEY CLUSTERED 
+	(
+	Id
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.RequestStatusHistory ADD CONSTRAINT
+	FK_RequestStatusHistory_Requests FOREIGN KEY
+	(
+	RequestId
+	) REFERENCES dbo.Requests
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.RequestStatusHistory SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.RequestMessageHistory ADD CONSTRAINT
+	FK_RequestMessageHistory_Requests FOREIGN KEY
+	(
+	RequestId
+	) REFERENCES dbo.Requests
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.RequestMessageHistory SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.RequestAssignedHistory ADD CONSTRAINT
+	FK_RequestAssignedHistory_Requests FOREIGN KEY
+	(
+	RequestId
+	) REFERENCES dbo.Requests
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.RequestAssignedHistory SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+
+
+--request foreign keys
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.Users SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.ITSystems SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.Categories SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.Requests ADD CONSTRAINT
+	FK_Requests_Categories FOREIGN KEY
+	(
+	CategoryId
+	) REFERENCES dbo.Categories
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.Requests ADD CONSTRAINT
+	FK_Requests_ITSystems FOREIGN KEY
+	(
+	ITSystemId
+	) REFERENCES dbo.ITSystems
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.Requests ADD CONSTRAINT
+	FK_Requests_Users FOREIGN KEY
+	(
+	UserId
+	) REFERENCES dbo.Users
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.Requests SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+
+
+
+ALTER TABLE dbo.Requests ADD CONSTRAINT
+	FK_Requests_Priority FOREIGN KEY
+	(
+	PriorityId
+	) REFERENCES dbo.Priority
+	(
+	Id
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+
+--nueva tabla de RequestType
+
 
 --todo: nueva tabla de logs, mover logging a DsK.AuthServer
-consolidar tablas de lookup
-remove RequestedByUserId Allow Nulls
-crear relaciones entre tablas request
-crear relaciones entre request con users (FK_RequestAssignedHistory_Users, FK_RequestMessageHistory_Users)
-Crear relaciones (FK_Requests_ITSystems)
-crear relacion (FK_Requests_Priority)
-crear relacion (FK_Requests_Category)

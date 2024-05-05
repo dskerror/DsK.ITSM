@@ -1,6 +1,6 @@
-﻿namespace DsK.ITSM.Shared.DTOs.Requests;
+﻿namespace DsK.ITSM.Shared.DTOs;
 
-public class RequestDto
+public partial class RequestDto
 {
     public int Id { get; set; }
 
@@ -8,19 +8,27 @@ public class RequestDto
 
     public string? Description { get; set; }
 
-    public string System { get; set; } = null!;
-
-    public string Priority { get; set; } = null!;
-
-    public string RequestedByUsername { get; set; } = null!;
-
-    public string RequestedByEmail { get; set; } = null!;
-
-    public string RequestedByDisplayName { get; set; } = null!;
-
     public DateTime RequestDateTime { get; set; }
 
-    public string Category { get; set; } = null!;
+    public int UserId { get; set; }
 
-    public string RequestType { get; set; } = null!;
+    public int ItsystemId { get; set; }
+
+    public int PriorityId { get; set; }
+
+    public int CategoryId { get; set; }
+
+    public virtual CategoryDto Category { get; set; } = null!;
+
+    public virtual ItsystemDto Itsystem { get; set; } = null!;
+
+    public virtual PriorityDto Priority { get; set; } = null!;
+
+    public virtual ICollection<RequestAssignedHistoryDto> RequestAssignedHistories { get; set; } = new List<RequestAssignedHistoryDto>();
+
+    public virtual ICollection<RequestMessageHistoryDto> RequestMessageHistories { get; set; } = new List<RequestMessageHistoryDto>();
+
+    public virtual ICollection<RequestStatusHistoryDto> RequestStatusHistories { get; set; } = new List<RequestStatusHistoryDto>();
+
+    public virtual UserDto User { get; set; } = null!;
 }

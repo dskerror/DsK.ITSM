@@ -10,24 +10,24 @@ namespace DsK.ITSM.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RequestsController : ControllerBase
+public class UserController : ControllerBase
 {
-    private readonly RequestsAPIService _service;
+    private readonly UserAPIService _service;
 
-    public RequestsController(RequestsAPIService service)
+    public UserController(UserAPIService service)
     {
         _service = service;
     }
 
     [HttpPost]
-    [Authorize(Roles = $"{Access.Admin}, {Access.Request.Create}")]
-    public async Task<IActionResult> Create(RequestCreateDto model)
+    [Authorize(Roles = $"{Access.Admin}, {Access.User.Create}")]
+    public async Task<IActionResult> Create(UserDto model)
     {
         return Ok(await _service.Create(model));
     }
 
     [HttpGet]
-    [Authorize(Roles = $"{Access.Admin}, {Access.Request.View}")]
+    [Authorize(Roles = $"{Access.Admin}, {Access.User.View}")]
     public async Task<IActionResult> Get([FromQuery] PagingRequest pagingRequest)
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -44,7 +44,7 @@ public class RequestsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = $"{Access.Admin}, {Access.Request.View}")]
+    [Authorize(Roles = $"{Access.Admin}, {Access.User.View}")]
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
@@ -52,15 +52,15 @@ public class RequestsController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize(Roles = $"{Access.Admin}, {Access.Request.Edit}")]
-    public async Task<IActionResult> Update(RequestDto model)
+    [Authorize(Roles = $"{Access.Admin}, {Access.User.Edit}")]
+    public async Task<IActionResult> Update(UserDto model)
     {
         var result = await _service.Update(model);
         return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = $"{Access.Admin}, {Access.Request.Delete}")]
+    [Authorize(Roles = $"{Access.Admin}, {Access.User.Delete}")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);

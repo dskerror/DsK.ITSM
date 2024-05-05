@@ -29,14 +29,26 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddDbContext<DsKITSMContext>(options =>
+        builder.Services.AddDbContext<DskitsmContext>(options =>
         {
             options.UseSqlServer(builder.Configuration.GetSection("ConnectionStrings").GetValue<string>("cn"));
         });
 
 
         builder.Services.AddScoped<SMTPMailService>();
+
+
+        builder.Services.AddScoped<CategoriesAPIService>();
+        builder.Services.AddScoped<ITSystemsAPIService>();
+        builder.Services.AddScoped<PrioritiesAPIService>();
+        builder.Services.AddScoped<RequestAssignedHistoriesAPIService>();
+        builder.Services.AddScoped<RequestMessageHistoriesAPIService>();
         builder.Services.AddScoped<RequestsAPIService>();
+        builder.Services.AddScoped<RequestStatusHistoriesAPIService>();
+        builder.Services.AddScoped<StatusAPIService>();
+        builder.Services.AddScoped<UserAPIService>();
+
+
         builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 

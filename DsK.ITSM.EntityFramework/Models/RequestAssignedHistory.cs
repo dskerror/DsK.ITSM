@@ -9,9 +9,11 @@ public partial class RequestAssignedHistory
 
     public int RequestId { get; set; }
 
-    public string AssignedTo { get; set; } = null!;
-
     public DateTime AssignedDateTime { get; set; }
 
+    public int? UserId { get; set; }
+
     public virtual Request Request { get; set; } = null!;
+
+    public virtual User? User { get; set; }
 }
