@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using DsK.ITSM.Shared.APIService;
-using DsK.ITSM.Shared.Token;
 using DsK.ITSM.EntityFramework.Models;
-using DsK.Services.Email;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Linq.Dynamic.Core;
+using System.Data;
 
 namespace DsK.ITSM.Infrastructure.APIServices;
 public class GenericAPIService<TEntity, TDto> : IGenericAPIService<TEntity, TDto> where TEntity : class
@@ -14,14 +12,15 @@ public class GenericAPIService<TEntity, TDto> : IGenericAPIService<TEntity, TDto
     private readonly DskitsmContext _context;
     private IMapper _mapper;
     private readonly DbSet<TEntity> _dbSet;
-
+    
     public GenericAPIService(DskitsmContext context, IMapper mapper)
     {
         _context = context;
         _dbSet = context.Set<TEntity>();
         _mapper = mapper;
+        
     }
-    public async Task<APIResult<TDto>> Create(TDto dto)
+    public virtual async Task<APIResult<TDto>> Create(TDto dto)
     {
         var result = new APIResult<TDto>();
 
@@ -40,7 +39,7 @@ public class GenericAPIService<TEntity, TDto> : IGenericAPIService<TEntity, TDto
         }
         return result;
     }
-    public async Task<APIResult<List<TDto>>> Get(PagingRequest p, IQueryable<TEntity> queryable)
+    public virtual async Task<APIResult<List<TDto>>> Get(PagingRequest p, IQueryable<TEntity> queryable)
     {
         var result = new APIResult<List<TDto>>();
 
@@ -77,7 +76,7 @@ public class GenericAPIService<TEntity, TDto> : IGenericAPIService<TEntity, TDto
 
         return result;
     }
-    public async Task<APIResult<TDto>> Get(int id)
+    public virtual async Task<APIResult<TDto>> Get(int id)
     {
         var result = new APIResult<TDto>();
 
@@ -95,7 +94,7 @@ public class GenericAPIService<TEntity, TDto> : IGenericAPIService<TEntity, TDto
 
         return result;
     }
-    public async Task<APIResult<TDto>> Update(TDto dto)
+    public virtual async Task<APIResult<TDto>> Update(TDto dto)
     {
         var result = new APIResult<TDto>();
         try
@@ -115,7 +114,7 @@ public class GenericAPIService<TEntity, TDto> : IGenericAPIService<TEntity, TDto
 
         return result;
     }
-    public async Task<APIResult<string>> Delete(int id)
+    public virtual async Task<APIResult<string>> Delete(int id)
     {
         APIResult<string> result = new APIResult<string>();
 

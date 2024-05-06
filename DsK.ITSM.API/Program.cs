@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace DsK.ITSM.API;
 public class Program
@@ -36,6 +38,9 @@ public class Program
 
 
         builder.Services.AddScoped<SMTPMailService>();
+
+        builder.Services.AddScoped<IDbConnection>((sp) =>
+            new SqlConnection(builder.Configuration.GetConnectionString("cn")));
 
 
         builder.Services.AddScoped<CategoriesAPIService>();

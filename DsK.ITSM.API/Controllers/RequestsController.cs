@@ -39,7 +39,7 @@ public class RequestsController : ControllerBase
 
         }
 
-        var result = await _service.Get(pagingRequest, null);
+        var result = await _service.Get(pagingRequest);
         return Ok(result);
     }
 
