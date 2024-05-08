@@ -38,7 +38,7 @@ public class RequestsAPIService : GenericAPIService<Request, RequestDto>
             var sql = @$"
                     SELECT a.*, c.StatusName FROM
                     (
-	                    SELECT a.[Id],[Summary],[Description],[RequestDateTime],[RequestType],b.[Name] AS UserName
+	                    SELECT a.[Id],[Summary],[Description],[RequestDateTime],b.[Name] AS UserName
 	                    ,c.SystemName,d.PriorityName,e.CategoryName,MAX(f.Id) AS RequestStatusHistoryMaxId
 	                    FROM Requests a
 	                    LEFT JOIN Users b ON a.UserId = b.Id
@@ -48,7 +48,7 @@ public class RequestsAPIService : GenericAPIService<Request, RequestDto>
 	                    LEFT JOIN RequestStatusHistory f ON a.id = f.RequestId
   
 	                    GROUP BY 
-	                    a.[Id],[Summary],[Description],[RequestDateTime],[RequestType],b.[Name]
+	                    a.[Id],[Summary],[Description],[RequestDateTime],b.[Name]
 	                    ,c.SystemName,d.PriorityName,e.CategoryName
                     ) a
                     LEFT JOIN RequestStatusHistory b ON a.RequestStatusHistoryMaxId = b.id
@@ -78,9 +78,11 @@ public class RequestsAPIService : GenericAPIService<Request, RequestDto>
         
     }
 
-    public async Task<APIResult<RequestDto>> Create(RequestCreateDto dto)
+    public async Task<APIResult<RequestDto>> Create(RequestCreateDto dto, int userid)
     {
         RequestDto mappedDto = _mapper.Map<RequestDto>(dto);
+        mappedDto.UserId = userid;
+        mappedDto.RequestDateTime = DateTime.Now;
         return await base.Create(mappedDto);
     }
 }

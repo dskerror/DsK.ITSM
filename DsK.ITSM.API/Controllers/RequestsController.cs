@@ -23,7 +23,22 @@ public class RequestsController : ControllerBase
     [Authorize(Roles = $"{Access.Admin}, {Access.Request.Create}")]
     public async Task<IActionResult> Create(RequestCreateDto model)
     {
-        return Ok(await _service.Create(model));
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        if (identity != null)
+        {
+            try
+            {
+                int userId = int.Parse(identity.FindFirst("UserId").Value);
+                await _service.Create(model, userId);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest();
+            }
+        }
+
+        return Ok();
     }
 
     [HttpGet]
@@ -35,7 +50,7 @@ public class RequestsController : ControllerBase
         {
             IEnumerable<Claim> claims = identity.Claims;
             // or
-            //identity.FindFirst("ClaimName").Value;
+            //identity.FindFirst("Id").Value;
 
         }
 
