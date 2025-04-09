@@ -1,4 +1,4 @@
-﻿namespace DsK.ITSM.MinimalAPI.Models;
+﻿namespace DsK.ITSM.MinimalAPI.Data.Dtos;
 public class RefreshRequest
 {
     public string Username { get; set; } = "";

@@ -1,0 +1,112 @@
+Please revise my changes: 
+please analize the following prompt and provide some suggestions to make a better api for creating and managing workflow tasks.
+
+I want to create a minimal api in c# for managing workflows. This API will be used from a web application and from other automated programs to create tasks as a part of a workflow for IT Service Management.
+
+Data Structure:
+
+	User
+		-id
+		-username
+		-email
+		-createdAt
+		-creatorUsername
+
+	Workflow
+		-id
+		-name
+		-createdByUserId
+		-createdAt
+
+	WorkflowTaskAssignmentPolicy
+		- id
+		- workflowId
+		- policyType (e.g., "Manual", "RoundRobin", "LoadBalanced")
+		- createdByUserId
+		- createdAt
+
+	WorkflowStatusDefinition
+		- id
+		- workflowId
+		- name
+		- createdAt
+		- createdByUserId
+
+	WorkflowStatusTransition
+		- id
+		- fromStatusId
+		- toStatusId
+		- workflowId
+		- createdAt
+		- createdByUserId
+			
+	WorkflowAdditionalFieldDefinition
+		- id
+		- workflowId
+		- fieldName
+		- dataType
+		- createdAt
+		- createdByUserId
+
+	WorkflowAssignedTo (This are users that can be assigned to a task in the workflow)
+		-id
+		-workflowId
+		-assignedToUserId
+		-createdByUserId
+		-createdAt
+
+	WorkflowAssignedToAutomatic (This are users are assigned to a task automatically in the workflow in round robin)
+		-id
+		-workflowAssignedToId 		
+		-createdByUserId
+		-createdAt
+
+	Task
+		- id
+		- workflowId
+		- name
+		- assignedToUserId
+		- createdAt
+		- createdByUserId
+		- currentStatusId (FK to WorkflowStatusDefinition)
+
+	TaskStatusHistory
+		- id
+		- taskId
+		- statusId
+		- createdAt
+		- createdByUserId
+	
+	TaskAdditionalField
+		- id
+		- taskId
+		- workflowAdditionalFieldDefinitionId (FK to WorkflowAdditionalFieldDefinition)
+		- value
+		- createdAt
+		- createdByUserId
+
+Endpoint Suggestions
+Method	Route	Description
+POST	/workflows	Create a new workflow
+GET	/workflows	List all workflows
+GET	/workflows/{id}	Get workflow with metadata and statuses
+POST	/workflows/{id}/status	Add a new status
+POST	/workflows/{id}/status-transition	Define allowed transitions
+POST	/workflows/{id}/fields	Define additional fields
+POST	/workflows/{id}/assignable-users	Define assignable users
+POST	/tasks	Create a task in a workflow
+PATCH	/tasks/{id}/status	Change task status
+PATCH	/tasks/{id}/fields	Add or update field values
+GET	/tasks/{id}	Retrieve task details
+GET /assignment-policies List all Assignment Policies available
+
+
+Example Sequence With Your Use Case
+	Create Workflow: POST /workflows
+	Add Statuses: POST /workflows/{id}/status ? "Open", "Assigned", etc.
+	Add Transitions: POST /workflows/{id}/status-transition ? Open ? Assigned, etc.
+	Add Custom Fields: "Priority", "Due Date", etc.
+	Add Assignable Users: User1, User2, User3
+	Create Task: "Problems with computer", assign to User1
+	Set Field Values: "Priority" = "High", etc.
+	Update Status: Move through status history

@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using DsK.ITSM.MinimalAPI.Data;
-using DsK.ITSM.MinimalAPI.Models;
+using DsK.ITSM.MinimalAPI.Data.Entities;
 
 namespace DsK.ITSM.MinimalAPI.Services;
 
@@ -25,7 +25,7 @@ public class AuthService
         if (await _db.Users.AnyAsync(u => u.Username == username))
             return (false, "Username already exists.");
 
-        var user = new UserEntity
+        var user = new User
         {
             Username = username,
             PasswordHash = HashPassword(password),
@@ -48,7 +48,7 @@ public class AuthService
         var accessToken = GenerateJwt(user);
         var refreshToken = GenerateRefreshToken();
 
-        user.RefreshTokens.Add(new RefreshTokenEntity
+        user.RefreshTokens.Add(new RefreshToken
         {
             Token = refreshToken,
             Expiry = DateTime.UtcNow.AddDays(7),
@@ -93,7 +93,7 @@ public class AuthService
     }
 
 
-    private string GenerateJwt(UserEntity user)
+    private string GenerateJwt(User user)
     {
         var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]!);
 

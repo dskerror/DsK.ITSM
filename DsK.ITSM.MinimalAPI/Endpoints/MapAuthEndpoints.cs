@@ -1,4 +1,4 @@
-﻿using DsK.ITSM.MinimalAPI.Models;
+﻿using DsK.ITSM.MinimalAPI.Data.Dtos;
 using DsK.ITSM.MinimalAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 
